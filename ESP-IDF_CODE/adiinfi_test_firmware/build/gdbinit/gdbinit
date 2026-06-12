@@ -1,0 +1,2 @@
+source E:/A_DEMO/ESP-IDF_CODE/adiinfi_test_firmware/build/gdbinit/symbols
+source E:/A_DEMO/ESP-IDF_CODE/adiinfi_test_firmware/build/gdbinit/connect

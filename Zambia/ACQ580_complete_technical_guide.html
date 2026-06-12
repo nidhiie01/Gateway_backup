@@ -1,0 +1,599 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary);line-height:1.7;font-size:15px}
+.toc{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem 1.5rem;margin-bottom:2rem}
+.toc h2{font-size:14px;font-weight:500;color:var(--color-text-secondary);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.05em}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 16px}
+.toc-grid a{font-size:13px;color:var(--color-text-info);text-decoration:none;padding:2px 0;display:block}
+.toc-grid a:hover{text-decoration:underline}
+h1{font-size:22px;font-weight:500;margin-bottom:0.5rem}
+h2{font-size:18px;font-weight:500;margin:2rem 0 0.75rem;padding-top:2rem;border-top:0.5px solid var(--color-border-tertiary)}
+h3{font-size:16px;font-weight:500;margin:1.25rem 0 0.5rem;color:var(--color-text-primary)}
+h4{font-size:14px;font-weight:500;margin:1rem 0 0.25rem;color:var(--color-text-secondary)}
+p{margin-bottom:0.75rem}
+ul,ol{margin:0.5rem 0 0.75rem 1.25rem}
+li{margin-bottom:0.3rem;font-size:14px}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:500;margin-right:4px}
+.badge-info{background:var(--color-background-info);color:var(--color-text-info)}
+.badge-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-success{background:var(--color-background-success);color:var(--color-text-success)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin:1rem 0}
+.warn-box{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:0.75rem 1rem;margin:0.75rem 0;font-size:14px;color:var(--color-text-warning)}
+.danger-box{background:var(--color-background-danger);border:0.5px solid var(--color-border-danger);border-radius:var(--border-radius-md);padding:0.75rem 1rem;margin:0.75rem 0;font-size:14px;color:var(--color-text-danger)}
+.info-box{background:var(--color-background-info);border:0.5px solid var(--color-border-info);border-radius:var(--border-radius-md);padding:0.75rem 1rem;margin:0.75rem 0;font-size:14px;color:var(--color-text-info)}
+.success-box{background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-md);padding:0.75rem 1rem;margin:0.75rem 0;font-size:14px;color:var(--color-text-success)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:0.75rem 0}
+th{background:var(--color-background-secondary);font-weight:500;text-align:left;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+td{padding:7px 10px;border:0.5px solid var(--color-border-tertiary);vertical-align:top}
+tr:nth-child(even) td{background:var(--color-background-secondary)}
+code{font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:1px 5px;border-radius:4px;border:0.5px solid var(--color-border-tertiary)}
+.reg{font-family:var(--font-mono);font-size:12px;color:var(--color-text-info)}
+.section-num{color:var(--color-text-tertiary);font-weight:400;margin-right:6px}
+.diagram-box{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem;margin:1rem 0;overflow-x:auto}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:0.75rem 0}
+@media(max-width:520px){.two-col{grid-template-columns:1fr}}
+</style>
+
+<div style="padding:1.5rem 0">
+<h1>ABB ACQ580 — Complete Technical & Integration Guide</h1>
+<p style="color:var(--color-text-secondary);font-size:14px">VSD for Water &amp; Wastewater · Modbus RTU · Pump Station Setup · EMI &amp; Physical Safety</p>
+
+<div class="toc">
+<h2>Contents</h2>
+<div class="toc-grid">
+<a href="#s1">1. How the ACQ580 works</a>
+<a href="#s2">2. First-time setup &amp; commissioning</a>
+<a href="#s3">3. Modbus RTU configuration</a>
+<a href="#s4">4. Modbus parameters &amp; register map</a>
+<a href="#s5">5. Reading data via USB–RS485 on PC</a>
+<a href="#s6">6. Connecting a pressure transducer</a>
+<a href="#s7">7. IoT gateway connection</a>
+<a href="#s8">8. RS485 ground &amp; termination</a>
+<a href="#s9">9. EMI — causes, effects &amp; protection</a>
+<a href="#s10">10. Non-opto-isolated RS485: risks &amp; precautions</a>
+<a href="#s11">11. Gateway distance &amp; safe placement</a>
+<a href="#s12">12. Complete pump station physical setup</a>
+<a href="#s13">13. Bill of materials / surrounding equipment list</a>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s1"><span class="section-num">1.</span> How the ACQ580 works</h2>
+
+<p>The ACQ580 is a <strong>Variable Speed Drive (VSD)</strong> — also called a Variable Frequency Drive (VFD) — designed specifically for water and wastewater pump applications. It converts fixed-frequency mains AC power into variable-frequency, variable-voltage AC output to control motor speed and torque precisely.</p>
+
+<h3>Internal power conversion stages</h3>
+<div class="card">
+<table>
+<tr><th>Stage</th><th>What happens</th><th>Component</th></tr>
+<tr><td>1. Rectifier</td><td>Converts 3-phase AC mains (230–480 V) to DC using a diode bridge rectifier</td><td>4× 125J MOVs for surge protection</td></tr>
+<tr><td>2. DC bus</td><td>Stores energy in capacitor bank; provides stable DC link voltage (~1.35 × mains V)</td><td>Electrolytic capacitors</td></tr>
+<tr><td>3. IGBT inverter</td><td>Switches DC at high frequency (switching frequency 4–12 kHz) using PWM to recreate 3-phase AC at desired frequency (0–500 Hz)</td><td>IGBT transistors</td></tr>
+<tr><td>4. Control board</td><td>Runs the pump control firmware; handles PID, I/O, fieldbus, protections</td><td>Embedded microcontroller</td></tr>
+</table>
+</div>
+
+<h3>Pump-specific features built in</h3>
+<ul>
+<li><strong>PID loop (Process control):</strong> Takes feedback from a pressure/flow transducer on AI2; automatically adjusts motor speed to maintain setpoint</li>
+<li><strong>Anti-cavitation protection:</strong> Detects and reacts to pump cavitation by speed reduction</li>
+<li><strong>Dry-run protection:</strong> Stops the pump if it runs without water (via DI or current sensing)</li>
+<li><strong>Soft pipe fill:</strong> Ramps up slowly to prevent water hammer</li>
+<li><strong>Multi-pump (IPC):</strong> Controls up to 3 pumps in rotation; drive-to-drive communication via D2D</li>
+<li><strong>Sensorless flow calculation:</strong> Estimates flow from motor parameters without a flow meter</li>
+<li><strong>Safe Torque Off (STO):</strong> Hardware safety; built-in as standard</li>
+</ul>
+
+<h3>Operating modes</h3>
+<div class="two-col">
+<div class="card"><h4>Local (Hand)</h4><p style="font-size:13px">Controlled from the control panel (ACX-AP). Used during commissioning and maintenance. Panel overrides all external signals.</p></div>
+<div class="card"><h4>Remote (Auto)</h4><p style="font-size:13px">Controlled via I/O terminals or fieldbus (Modbus RTU). Normal operating mode for pump station automation.</p></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s2"><span class="section-num">2.</span> First-time setup &amp; commissioning</h2>
+
+<div class="warn-box"><strong>⚠ Safety first:</strong> Only qualified electrical personnel should install and commission the drive. Dangerous voltages remain present for up to 5 minutes after power-off. Always verify the DC bus voltage is zero before working inside.</div>
+
+<h3>Step-by-step commissioning sequence</h3>
+<ol>
+<li><strong>Mechanical mounting:</strong> Mount vertically on a flat, vibration-free surface. Minimum clearance: 100 mm top &amp; bottom, 50 mm sides. Operating temperature: −15 to +50 °C.</li>
+<li><strong>Power wiring (mains input):</strong> Connect 3-phase supply (L1, L2, L3) to input terminals U1, V1, W1. Connect PE (protective earth) to the drive's PE terminal. Use copper conductors. Check mains voltage matches drive rating.</li>
+<li><strong>Motor wiring (output):</strong> Connect motor to output terminals U2, V2, W2. Keep motor cable as short as possible; always use shielded motor cable and connect shield to PE at both ends.</li>
+<li><strong>Control wiring:</strong> Connect I/O signals, transducer, and fieldbus to the control terminal block X2.</li>
+<li><strong>Power up &amp; Primary Settings wizard:</strong> On first power-up the ACX-AP control panel starts the Primary Settings wizard — set language, application type (Water default), motor nameplate data (voltage, current, frequency, speed, power).</li>
+<li><strong>ID run:</strong> Perform motor ID run (stationary or rotating) via <em>Menu → Primary settings → ID run</em> to let the drive measure motor parameters automatically.</li>
+<li><strong>Set control parameters:</strong> Set control source (EXT1), reference source, PID setpoint. Verify protections (overload, dry-run, cavitation thresholds).</li>
+<li><strong>Test run:</strong> Start in Hand mode; verify rotation direction; check that the drive ramps up and down smoothly.</li>
+</ol>
+
+<h3>Key control terminal block (X2) pinout</h3>
+<div class="card">
+<table>
+<tr><th>Terminal</th><th>Label</th><th>Function</th></tr>
+<tr><td>X2:1</td><td>SCR</td><td>Shield / cable screen reference</td></tr>
+<tr><td>X2:2</td><td>AI1+</td><td>Analogue input 1 (0/4–20 mA or 0–10 V) — e.g. setpoint</td></tr>
+<tr><td>X2:3</td><td>AI1−</td><td>Analogue input 1 negative / AGND</td></tr>
+<tr><td>X2:4</td><td>AI2+</td><td>Analogue input 2 — e.g. pressure transducer feedback</td></tr>
+<tr><td>X2:5</td><td>AI2−</td><td>Analogue input 2 negative / AGND</td></tr>
+<tr><td>X2:6</td><td>AO1</td><td>Analogue output 1 (0–20 mA) — e.g. speed/frequency out</td></tr>
+<tr><td>X2:7</td><td>AGND</td><td>Analogue ground reference</td></tr>
+<tr><td>X2:10</td><td>+24V</td><td>Auxiliary 24 V DC output (max 250 mA) for transducer supply</td></tr>
+<tr><td>X2:11</td><td>DGND</td><td>Digital ground</td></tr>
+<tr><td>X2:14</td><td>DI1</td><td>Digital input 1 — default: Start/Stop</td></tr>
+<tr><td>X2:15</td><td>DI2</td><td>Digital input 2 — default: Run permissive / dry-run</td></tr>
+<tr><td>X2:24</td><td>B+</td><td><strong>RS485 Modbus B+ (non-inverting, Data+)</strong></td></tr>
+<tr><td>X2:25</td><td>A−</td><td><strong>RS485 Modbus A− (inverting, Data−)</strong></td></tr>
+<tr><td>X2:26</td><td>DGND</td><td><strong>RS485 signal ground (DGND)</strong></td></tr>
+<tr><td>X2:27</td><td>TERM</td><td>Termination switch (ON at bus ends)</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s3"><span class="section-num">3.</span> Modbus RTU configuration</h2>
+
+<p>The ACQ580 has a built-in <strong>Embedded Fieldbus (EFB) interface</strong> that operates as a Modbus RTU slave over RS485. No additional adapter card is needed for basic Modbus control and monitoring. For advanced protocols (PROFIBUS, EtherNet/IP, etc.) the optional FSCA-01 adapter can be used.</p>
+
+<div class="info-box"><strong>ℹ️ Protocol:</strong> The ACQ580 supports Modbus RTU (not ASCII). Physical interface: EIA-485 (RS485), half-duplex, 2-wire + signal ground.</div>
+
+<h3>Wiring for Modbus RTU</h3>
+<div class="card">
+<p style="font-size:13px;margin-bottom:0.5rem"><strong>Cable recommendation:</strong> Use Belden 9842 or equivalent — dual twisted shielded pair, 120 Ω nominal impedance. Connect one twisted pair to B+ and A−. Use the second pair or a separate wire for DGND (signal ground).</p>
+<table>
+<tr><th>Drive terminal</th><th>Connect to master/gateway</th><th>Notes</th></tr>
+<tr><td><code>X2:24 — B+</code></td><td>RS485 B+ (Data+, non-inverting)</td><td>Twisted pair, wire 1</td></tr>
+<tr><td><code>X2:25 — A−</code></td><td>RS485 A− (Data−, inverting)</td><td>Twisted pair, wire 2</td></tr>
+<tr><td><code>X2:26 — DGND</code></td><td>Signal GND on master/gateway</td><td>3rd wire or 2nd pair — see Section 8</td></tr>
+<tr><td>Termination switch</td><td>SW ON if this drive is at bus end</td><td>120 Ω internal termination</td></tr>
+</table>
+</div>
+
+<div class="warn-box"><strong>⚠ B+/A− vs A/B naming confusion:</strong> ABB labels their terminals B+ (non-inverting, logic high when idle) and A− (inverting). Some gateways label their terminals opposite. Always use a multimeter to verify polarity before first power-on of the bus. Reversed polarity causes no damage but communication will not work.</div>
+
+<h3>Parameter Group 58 — Embedded Fieldbus settings</h3>
+<div class="card">
+<table>
+<tr><th>Parameter</th><th>Name</th><th>Setting for Modbus RTU</th><th>Notes</th></tr>
+<tr><td class="reg">58.01</td><td>Protocol</td><td><strong>Modbus RTU</strong></td><td>Selects Modbus RTU as EFB protocol</td></tr>
+<tr><td class="reg">58.03</td><td>Node address</td><td><strong>1–247</strong> (unique)</td><td>Must match master's slave address setting</td></tr>
+<tr><td class="reg">58.04</td><td>Baud rate</td><td><strong>9600 / 19200 / 38400</strong></td><td>Default 19200. Must match master.</td></tr>
+<tr><td class="reg">58.05</td><td>Parity</td><td><strong>8 Even 1</strong> (default) or <strong>8 None 2</strong></td><td>Must match master. 8E1 is Modbus standard.</td></tr>
+<tr><td class="reg">58.06</td><td>Refresh settings</td><td>Set to <strong>Refresh</strong> after any change</td><td><strong>Critical:</strong> settings don't apply until refreshed or power-cycled</td></tr>
+<tr><td class="reg">58.14</td><td>Comm loss timeout</td><td>3–10 s recommended</td><td>Time before drive reacts to communication loss</td></tr>
+<tr><td class="reg">58.15</td><td>Comm loss function</td><td>Fault / Last speed / Stop</td><td>Action on communication loss. Use "Last speed" for safety in pumping.</td></tr>
+<tr><td class="reg">58.25</td><td>EFB control word type</td><td>ABB Drives (default)</td><td>Defines the control word profile used</td></tr>
+<tr><td class="reg">58.26</td><td>EFB ref1 type</td><td>Speed or frequency (default)</td><td>What reference 1 represents</td></tr>
+<tr><td class="reg">58.33</td><td>Addressing mode</td><td><strong>0</strong> (default)</td><td>Allows both 16-bit and 32-bit register access simultaneously</td></tr>
+</table>
+</div>
+
+<h3>Parameters to enable Modbus control (not just monitoring)</h3>
+<div class="card">
+<table>
+<tr><th>Parameter</th><th>Set to</th><th>Purpose</th></tr>
+<tr><td class="reg">20.01</td><td>EFB</td><td>Command source = fieldbus (allows start/stop via Modbus)</td></tr>
+<tr><td class="reg">28.11</td><td>EFB Ref1</td><td>Frequency reference from fieldbus</td></tr>
+<tr><td class="reg">19.11</td><td>EXT1</td><td>Selects EXT1 as active control location</td></tr>
+</table>
+<div class="warn-box" style="margin-top:0.75rem"><strong>⚠ Common mistake:</strong> If 20.01 is not set to EFB, the drive will acknowledge Modbus commands but will not start. If 28.11 is not set to EFB Ref1, writing a speed/frequency value over Modbus will have no effect.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s4"><span class="section-num">4.</span> Modbus parameters &amp; register map</h2>
+
+<h3>Register address formula (ACQ580 / ACx580 series)</h3>
+<div class="card">
+<p style="font-size:13px"><strong>16-bit register:</strong> <code>Modbus register = 40000 + (parameter group × 100) + parameter index</code><br>
+Example: Parameter 01.06 (Output frequency) → 40000 + (01×100) + 06 = <span class="reg">40106</span></p>
+<p style="font-size:13px;margin-top:0.5rem"><strong>32-bit register</strong> (param 58.33 = 0): <code>420000 + (200 × group) + (2 × index)</code><br>
+Example: Parameter 01.06 → 420000 + (200×1) + (2×6) = <span class="reg">420212</span></p>
+</div>
+
+<h3>Essential read-only monitoring registers (16-bit)</h3>
+<table>
+<tr><th>Modbus Reg</th><th>Parameter</th><th>Name</th><th>Unit / Scaling</th><th>Conversion</th></tr>
+<tr><td class="reg">40101</td><td>01.01</td><td>Motor speed used</td><td>rpm, 0–20000</td><td>Value ÷ 20000 × P46.01 (rated speed)</td></tr>
+<tr><td class="reg">40102</td><td>01.02</td><td>Motor speed estimated</td><td>rpm, 0–20000</td><td>Value ÷ 20000 × P46.01</td></tr>
+<tr><td class="reg">40106</td><td>01.06</td><td>Output frequency</td><td>Hz, 0–20000</td><td>Value ÷ 20000 × P46.02 (rated freq)</td></tr>
+<tr><td class="reg">40107</td><td>01.07</td><td>Motor current</td><td>A, depends on P46.05</td><td>Set P46.05=100 for 0.01 A resolution (÷100)</td></tr>
+<tr><td class="reg">40110</td><td>01.10</td><td>Motor torque</td><td>%, 0.01</td><td>Value ÷ 100 = % torque</td></tr>
+<tr><td class="reg">40113</td><td>01.13</td><td>Output voltage</td><td>V, 1V</td><td>No conversion needed</td></tr>
+<tr><td class="reg">40114</td><td>01.14</td><td>Output power</td><td>kW, 0.1</td><td>Value ÷ 10 = kW</td></tr>
+<tr><td class="reg">40111</td><td>01.11</td><td>DC voltage</td><td>VDC, 0.1</td><td>Value ÷ 10 = VDC</td></tr>
+<tr><td class="reg">40120</td><td>01.20</td><td>Inverter kWh counter</td><td>kWh, 0.1</td><td>Value ÷ 10 = kWh</td></tr>
+<tr><td class="reg">40503</td><td>05.03</td><td>Hours run</td><td>hours (whole)</td><td>No conversion</td></tr>
+<tr><td class="reg">40511</td><td>05.11</td><td>Inverter temperature</td><td>%, 1%</td><td>100% = overtemperature fault</td></tr>
+<tr><td class="reg">40616</td><td>06.16</td><td>Drive status word 1</td><td>Bit flags</td><td>Bit 8=Local, Bit 10=Ext1, Bit 11=Ext2</td></tr>
+<tr><td class="reg">40622</td><td>06.22</td><td>Hand-Off-Auto status</td><td>Bit flags</td><td>Bit 0=Hand, Bit 1=Off, Bit 2=Auto</td></tr>
+<tr><td class="reg">40411</td><td>04.11</td><td>Last fault code</td><td>Fault code hex</td><td>Convert to hex, compare to fault list</td></tr>
+<tr><td class="reg">40412</td><td>04.12</td><td>2nd to last fault</td><td>Fault code hex</td><td>Convert to hex</td></tr>
+</table>
+
+<h3>Control registers (read/write)</h3>
+<table>
+<tr><th>Modbus Reg</th><th>Name</th><th>Function</th></tr>
+<tr><td class="reg">40001</td><td>Control Word</td><td>Start/stop/reset. Bit 0=On/Off, Bit 3=Enable, Bit 7=Fault reset</td></tr>
+<tr><td class="reg">40002</td><td>Speed Reference 1</td><td>Speed/frequency setpoint. 0–20000 maps to 0–rated speed</td></tr>
+<tr><td class="reg">40003</td><td>Speed Reference 2</td><td>Alternative reference</td></tr>
+</table>
+
+<h3>Pump-specific status registers (ACQ580)</h3>
+<table>
+<tr><th>Modbus Reg</th><th>Parameter</th><th>Description</th></tr>
+<tr><td class="reg">40801</td><td>80.01</td><td>Pump status word (cavitation, dry-run, low flow flags)</td></tr>
+<tr><td class="reg">40814</td><td>08.14</td><td>Process PID actual value (feedback from transducer)</td></tr>
+<tr><td class="reg">40815</td><td>08.15</td><td>Process PID setpoint</td></tr>
+<tr><td class="reg">40816</td><td>08.16</td><td>Process PID error</td></tr>
+</table>
+
+<h3>Modbus function codes supported</h3>
+<table>
+<tr><th>Code</th><th>Name</th><th>Use</th></tr>
+<tr><td>03 (0x03)</td><td>Read Holding Registers</td><td>Read parameters and status (most common)</td></tr>
+<tr><td>04 (0x04)</td><td>Read Input Registers</td><td>Read analogue input values</td></tr>
+<tr><td>06 (0x06)</td><td>Write Single Register</td><td>Write one parameter/control register</td></tr>
+<tr><td>16 (0x10)</td><td>Write Multiple Registers</td><td>Write control word + reference in one frame</td></tr>
+<tr><td>01 (0x01)</td><td>Read Coils</td><td>Read control word bits (individual)</td></tr>
+<tr><td>05 (0x05)</td><td>Write Single Coil</td><td>Write individual control word bits</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s5"><span class="section-num">5.</span> Reading data via USB–RS485 on a PC</h2>
+
+<div class="success-box"><strong>✅ Yes, you can!</strong> A USB to RS485 converter connected to the drive's EFB port (B+, A−, DGND) lets you read and write parameters, monitor the drive, and even control it — without a PLC, gateway, or ABB Drive Composer software.</div>
+
+<h3>What you need</h3>
+<ul>
+<li><strong>USB to RS485 converter</strong> — use a converter with a proper FT232 or CH340 chip, or better, a fully isolated converter (e.g. FTDI USB-RS485-WE, Waveshare USB to RS485, or similar)</li>
+<li><strong>Software:</strong> Any Modbus RTU master software — ModbusPoll (Windows), QModMaster (Linux/Win/Mac), modscan32, or a Python script using the <code>pymodbus</code> library</li>
+<li><strong>Wiring:</strong> Connect converter's A(−) to drive X2:25, B(+) to drive X2:24, GND to drive X2:26</li>
+</ul>
+
+<h3>PC software setup</h3>
+<div class="card">
+<table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Port</td><td>COM port assigned to your USB-RS485 adapter (check Device Manager)</td></tr>
+<tr><td>Protocol</td><td>Modbus RTU</td></tr>
+<tr><td>Baud rate</td><td>Match drive P58.04 (default: 19200)</td></tr>
+<tr><td>Data bits</td><td>8</td></tr>
+<tr><td>Parity</td><td>Even (match P58.05, default: 8E1)</td></tr>
+<tr><td>Stop bits</td><td>1</td></tr>
+<tr><td>Slave ID</td><td>Match drive P58.03 (default: 1)</td></tr>
+<tr><td>Timeout</td><td>500–1000 ms</td></tr>
+</table>
+</div>
+
+<h3>Python example (read output frequency)</h3>
+<div class="card" style="font-family:var(--font-mono);font-size:12px;line-height:1.8">
+from pymodbus.client import ModbusSerialClient<br>
+client = ModbusSerialClient(port='COM3', baudrate=19200, parity='E', stopbits=1, bytesize=8, timeout=1)<br>
+client.connect()<br>
+result = client.read_holding_registers(address=105, count=1, slave=1)  # Register 40106 → address=105<br>
+freq_raw = result.registers[0]<br>
+freq_hz = freq_raw / 20000 * 50  # if rated frequency is 50 Hz (P46.02)<br>
+print(f"Output frequency: {freq_hz:.2f} Hz")<br>
+client.close()
+</div>
+
+<div class="warn-box"><strong>⚠ USB converter isolation:</strong> If using a non-isolated USB-RS485 converter, your PC ground will be referenced to the drive's DGND which is near the high-voltage power section. Always use a fully isolated USB-RS485 converter for safety and to prevent ground loop noise on the bus.</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s6"><span class="section-num">6.</span> Connecting a pressure transducer</h2>
+
+<p>The most common sensor in a pump station is a 4–20 mA pressure transducer used for PID feedback (to maintain constant discharge pressure).</p>
+
+<h3>Wiring (3-wire, 4–20 mA loop-powered)</h3>
+<div class="card">
+<table>
+<tr><th>Transducer wire</th><th>Connect to</th><th>Notes</th></tr>
+<tr><td>+ (Power / Signal)</td><td>Drive X2:4 (AI2+)</td><td>Drive AI2 is configured as 4–20 mA input</td></tr>
+<tr><td>− (Return / GND)</td><td>Drive X2:5 (AI2−) and X2:7 (AGND)</td><td>Signal return and ground</td></tr>
+<tr><td>Shield</td><td>Drive X2:1 (SCR)</td><td>Connect at drive end only; leave other end floating</td></tr>
+</table>
+<p style="font-size:13px;margin-top:0.5rem"><strong>Power supply for transducer:</strong> The drive's +24 V output (X2:10, max 250 mA) can power the transducer directly. Connect X2:10 → transducer supply +. Connect DGND (X2:11) → transducer supply −.</p>
+</div>
+
+<h3>Parameters for AI2 (pressure feedback)</h3>
+<div class="card">
+<table>
+<tr><th>Parameter</th><th>Set to</th><th>Purpose</th></tr>
+<tr><td class="reg">12.12</td><td>4–20 mA</td><td>Configures AI2 as current input</td></tr>
+<tr><td class="reg">12.13</td><td>Min value (e.g. 0.0 bar)</td><td>Corresponds to 4 mA</td></tr>
+<tr><td class="reg">12.14</td><td>Max value (e.g. 10.0 bar)</td><td>Corresponds to 20 mA</td></tr>
+<tr><td class="reg">40.07</td><td>AI2 (feedback source)</td><td>Sets AI2 as PID process feedback</td></tr>
+<tr><td class="reg">40.08</td><td>Setpoint value (e.g. 6.0 bar)</td><td>Target pressure</td></tr>
+</table>
+</div>
+
+<div class="info-box"><strong>ℹ️ Transducer specifications:</strong> Use a 2-wire or 3-wire 4–20 mA output transducer rated for the system pressure + 20% safety margin. For a pump rated to 10 bar, use a 0–16 bar transducer. Ensure IP67 or better rating for outdoor/wet locations.</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s7"><span class="section-num">7.</span> IoT gateway connection via Modbus RTU</h2>
+
+<p>An IoT/Modbus gateway (e.g. Advantech ADAM, Moxa, Ewon Cosy, Weintek, Robustel, or custom RS485→MQTT/Cloud gateway) acts as the Modbus master and the ACQ580 is the slave.</p>
+
+<h3>Connection topology</h3>
+<div class="card" style="font-family:var(--font-mono);font-size:12px;line-height:2">
+[IoT Gateway]<br>
+&nbsp;&nbsp;RS485 B+ ──────── X2:24 B+ [ACQ580]<br>
+&nbsp;&nbsp;RS485 A− ──────── X2:25 A− [ACQ580]<br>
+&nbsp;&nbsp;GND ─────────── X2:26 DGND [ACQ580]<br>
+&nbsp;&nbsp;(Termination 120Ω at gateway end if it is at the bus end)
+</div>
+
+<h3>Gateway configuration settings</h3>
+<ul>
+<li>Protocol: <strong>Modbus RTU</strong> (not TCP/ASCII)</li>
+<li>Baud rate: match drive P58.04 (recommend 9600 for noisy environments, 19200 for default)</li>
+<li>Parity: match drive P58.05 (default 8E1)</li>
+<li>Slave address: match drive P58.03 (default 1)</li>
+<li>Poll interval: minimum 100 ms; 500 ms–1 s is typical for pump monitoring</li>
+<li>Timeout: 500–1000 ms</li>
+<li>Register type: <strong>Holding Registers (function 03)</strong> for all ACQ580 parameters</li>
+<li>Register addressing: <strong>0-based</strong> (subtract 40001 from the Modbus register number) — e.g., register 40106 → address 105</li>
+</ul>
+
+<div class="warn-box"><strong>⚠ 0-based vs 1-based addressing:</strong> Some gateways use 1-based addressing where "40106" is entered as-is. Others use 0-based where you enter 105. Check your gateway's manual. Entering the wrong offset is the #1 cause of "register not found" errors.</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s8"><span class="section-num">8.</span> RS485 ground (DGND) connection — mandatory or optional?</h2>
+
+<div class="danger-box"><strong>⚠ DGND is mandatory for reliable communication</strong> in industrial environments with drives, motors, and switching equipment.</div>
+
+<h3>Why DGND matters</h3>
+<p>RS485 is a differential signalling standard — it can tolerate common-mode noise up to ±7 V. However, without a common ground reference between master and slave, ground potential differences can exceed this limit (especially near VSDs which generate significant common-mode voltage). This leads to corrupted data, CRC errors, and communication failures.</p>
+
+<h3>Correct DGND connection rules (per ABB ACQ580 manual)</h3>
+<ol>
+<li>Connect the DGND conductor from drive X2:26 to the signal ground reference at the automation controller or gateway.</li>
+<li>Use a <strong>single DGND connection per device</strong> — do not create ground loops by connecting DGND at multiple points.</li>
+<li>The cable shield should be attached at each drive but NOT connected to the drive's PE/chassis ground — connect shields together at each drive via the SCR terminal, and connect the combined shield to the automation controller ground only at one end.</li>
+<li>Do NOT ground the RS485 network at more than one point along the bus (to prevent ground loop currents).</li>
+</ol>
+
+<h3>Termination resistors (120 Ω)</h3>
+<ul>
+<li>Required at <strong>both physical ends</strong> of the RS485 bus.</li>
+<li>The ACQ580 has a built-in termination switch — set to ON for end-of-bus drives.</li>
+<li>Only one device should have <strong>bias resistors</strong> enabled (pull-up/pull-down to define idle bus state) — typically the master/gateway end.</li>
+<li>All intermediate drives: termination OFF, bias OFF.</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s9"><span class="section-num">9.</span> EMI from the ACQ580 — effects &amp; protection</h2>
+
+<div class="danger-box"><strong>⚠ The ACQ580 is a significant EMI source.</strong> IGBT switching at 4–12 kHz creates high-frequency electromagnetic interference that can corrupt RS485 communication, damage gateway circuits, and cause false readings in sensors.</div>
+
+<h3>EMI sources in the ACQ580</h3>
+<ul>
+<li><strong>IGBT switching transients:</strong> Fast voltage rise/fall (dV/dt) on motor cable causes conducted and radiated EMI at harmonics of the switching frequency (4–12 kHz and harmonics)</li>
+<li><strong>Common-mode current:</strong> Flows through motor cable capacitance to PE, generating high-frequency ground currents that can contaminate signal cables sharing the same conduit</li>
+<li><strong>Motor cable radiation:</strong> Unshielded or poorly shielded motor cable acts as an antenna</li>
+<li><strong>DC bus switching noise:</strong> Visible on supply lines as conducted emissions</li>
+</ul>
+
+<h3>EMI compliance of ACQ580</h3>
+<p>The ACQ580 complies with <strong>EN 61800-3 (EMC product standard for drives)</strong>. However, EMC compliance only holds under correct installation conditions — proper shielding, correct cable routing, and proper grounding.</p>
+
+<h3>How EMI affects the gateway and RS485 bus</h3>
+<ul>
+<li>Induced noise on RS485 cables → CRC errors, communication dropouts</li>
+<li>Common-mode voltage transients → can damage non-isolated RS485 interfaces</li>
+<li>High-frequency current through ground loops → corrupts signal reference</li>
+<li>Physical proximity to motor cables → capacitive/inductive coupling</li>
+</ul>
+
+<h3>EMI protection measures</h3>
+<table>
+<tr><th>Measure</th><th>How to apply</th><th>Importance</th></tr>
+<tr><td>Shielded RS485 cable</td><td>Use Belden 9842 or equivalent; connect shield at one end only</td><td><span class="badge badge-danger">Critical</span></td></tr>
+<tr><td>Separate cable trays</td><td>RS485/signal cables in a separate tray from motor power cables; minimum 300 mm separation</td><td><span class="badge badge-danger">Critical</span></td></tr>
+<tr><td>Avoid parallel runs</td><td>Never run RS485 cable parallel to motor cable for more than 1 m</td><td><span class="badge badge-danger">Critical</span></td></tr>
+<tr><td>90° crossings</td><td>Where signal and power cables must cross, do so at right angles</td><td><span class="badge badge-warn">Important</span></td></tr>
+<tr><td>Ferrite cores</td><td>Snap-on ferrite on RS485 cable near the drive</td><td><span class="badge badge-warn">Important</span></td></tr>
+<tr><td>Drive EMC filter</td><td>Ensure EMC filter is not disabled (factory default: enabled for TN-S system)</td><td><span class="badge badge-warn">Important</span></td></tr>
+<tr><td>Shielded motor cable</td><td>Always use shielded motor cable; connect shield to PE at both drive and motor ends</td><td><span class="badge badge-danger">Critical</span></td></tr>
+<tr><td>Drive cabinet grounding</td><td>Star-point grounding; all shields to a single ground bar</td><td><span class="badge badge-warn">Important</span></td></tr>
+<tr><td>Opto-isolated RS485</td><td>Use RS485 SPD (surge protective device) or isolated gateway RS485 port</td><td><span class="badge badge-danger">Critical near VSD</span></td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s10"><span class="section-num">10.</span> Non-opto-isolated RS485 in gateway — risks &amp; precautions</h2>
+
+<div class="warn-box"><strong>⚠ If your IoT gateway does not have optically isolated RS485</strong>, the gateway's RS485 transceiver chip is directly referenced to the gateway's internal ground, creating a galvanic connection to the drive's DGND and all noise on that bus.</div>
+
+<h3>Risks of non-isolated RS485</h3>
+<ul>
+<li><strong>Common-mode voltage damage:</strong> VSD-generated common-mode transients can exceed the RS485 chip's ±7 V tolerance, destroying the transceiver IC in the gateway — even a single surge can permanently damage it</li>
+<li><strong>Ground loop currents:</strong> Current flowing through the ground conductor between drive and gateway adds noise to data signals, causing CRC errors and communication dropouts</li>
+<li><strong>Data corruption:</strong> High-frequency switching noise from the VSD couples into the non-isolated RS485 line, corrupting frames</li>
+<li><strong>Gateway instability:</strong> Severe ground disturbances can lock up the gateway processor, requiring power cycle</li>
+</ul>
+
+<h3>Pros of non-isolated RS485</h3>
+<ul>
+<li>Lower cost gateway</li>
+<li>Simpler implementation — no isolation barrier to manage</li>
+<li>Acceptable in low-noise environments (e.g., office automation, small PLC panels far from large drives)</li>
+</ul>
+
+<h3>Precautions for non-isolated RS485 near ACQ580</h3>
+<table>
+<tr><th>#</th><th>Precaution</th><th>Why</th></tr>
+<tr><td>1</td><td>Add an <strong>external RS485 SPD (Surge Protective Device)</strong> at the gateway RS485 port — e.g., ABB OVR RS485 (rated 10 kA, 8×20 µs). Install in the DIN rail enclosure closest to the gateway.</td><td>Absorbs VSD-generated surge energy before it reaches the non-isolated transceiver</td></tr>
+<tr><td>2</td><td>Add a <strong>signal-line ferrite core (common-mode choke)</strong> on the RS485 cable at the gateway entry point</td><td>Reduces high-frequency conducted noise</td></tr>
+<tr><td>3</td><td>Keep DGND connection as a single conductor — do not create ground loops</td><td>Prevents circulating ground currents</td></tr>
+<tr><td>4</td><td>Route RS485 cable well away from motor cable and drive (see Section 11 for distances)</td><td>Reduces capacitive/inductive coupling</td></tr>
+<tr><td>5</td><td>Use a high-quality shielded Belden 9842 cable; connect shield at gateway end to gateway chassis ground</td><td>Shields against radiated EMI</td></tr>
+<tr><td>6</td><td>Consider upgrading to an isolated RS485-equipped gateway if faults are persistent</td><td>Most reliable long-term solution</td></tr>
+<tr><td>7</td><td>Power the gateway from a separate, clean power supply (not shared with the drive's auxiliary supply)</td><td>Prevents power-line noise coupling into gateway</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s11"><span class="section-num">11.</span> Gateway distance &amp; safe placement from the VSD</h2>
+
+<h3>Minimum recommended distances</h3>
+<table>
+<tr><th>Component</th><th>Min. distance from ACQ580</th><th>Reason</th></tr>
+<tr><td>IoT Gateway (non-isolated RS485)</td><td><strong>≥ 1 m physical separation</strong> from drive enclosure; RS485 cable routed separately</td><td>Radiated EMI from drive heatsink and capacitors</td></tr>
+<tr><td>IoT Gateway (isolated RS485)</td><td>Can be in same panel if in separate compartment with segregated wiring</td><td>Galvanic isolation removes most risk</td></tr>
+<tr><td>RS485 cable parallel to motor cable</td><td><strong>Never &lt; 300 mm</strong> parallel run; cross at 90° where needed</td><td>Inductive coupling from motor cable</td></tr>
+<tr><td>Gateway from drive output terminals</td><td><strong>≥ 200 mm</strong> minimum</td><td>High dV/dt switching noise radiation</td></tr>
+<tr><td>Gateway from motor cable conduit</td><td><strong>≥ 300 mm</strong></td><td>Magnetic field from motor current harmonics</td></tr>
+</table>
+
+<h3>Where to physically mount the gateway in the panel</h3>
+<ul>
+<li>Mount in the <strong>upper section</strong> of the panel or in a <strong>separate enclosure</strong> from the VSD</li>
+<li>Use a <strong>metal DIN rail enclosure</strong> for the gateway (provides shielding)</li>
+<li>Connect the enclosure to the PE/chassis ground star point</li>
+<li>If in the same panel: use a <strong>grounded metal divider plate</strong> between VSD section and gateway/controls section</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s12"><span class="section-num">12.</span> Complete pump station physical setup</h2>
+<p>A typical pump station using ACQ580 + pressure transducer + IoT gateway for cloud monitoring.</p>
+
+<div class="diagram-box">
+<svg width="100%" viewBox="0 0 680 520" role="img">
+<title>ACQ580 pump station complete physical setup diagram</title>
+<desc>Shows mains supply, ACQ580 VSD, motor/pump, pressure transducer, IoT gateway, and PC cloud connection with proper wiring segregation</desc>
+<defs>
+<marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<!-- MAINS INPUT -->
+<g>
+<rect x="20" y="30" width="100" height="44" rx="6" fill="none" stroke="var(--color-text-tertiary)" stroke-width="0.5"/>
+<text x="70" y="48" text-anchor="middle" font-size="13" font-weight="500" fill="var(--color-text-primary)" dominant-baseline="central">3-phase</text>
+<text x="70" y="64" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">mains 400 V</text>
+</g>
+
+<!-- MCB/Fuse -->
+<rect x="150" y="40" width="56" height="24" rx="4" fill="none" stroke="var(--color-text-tertiary)" stroke-width="0.5"/>
+<text x="178" y="52" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">MCB / fuse</text>
+<line x1="120" y1="52" x2="150" y2="52" stroke="var(--color-text-tertiary)" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+<!-- ACQ580 VSD -->
+<rect x="230" y="20" width="160" height="160" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-secondary)" stroke-width="1"/>
+<text x="310" y="44" text-anchor="middle" font-size="14" font-weight="500" fill="var(--color-text-primary)" dominant-baseline="central">ACQ580</text>
+<text x="310" y="62" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">VSD</text>
+<!-- Terminals -->
+<rect x="240" y="80" width="60" height="20" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="270" y="90" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)" dominant-baseline="central">U1 V1 W1 PE</text>
+<rect x="320" y="80" width="60" height="20" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="350" y="90" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)" dominant-baseline="central">U2 V2 W2 PE</text>
+<rect x="250" y="120" width="120" height="20" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="310" y="130" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)" dominant-baseline="central">B+ A− DGND | AI2+ AI2−</text>
+<text x="310" y="155" text-anchor="middle" font-size="10" fill="var(--color-text-tertiary)" dominant-baseline="central">X2:24,25,26 | X2:4,5</text>
+<line x1="206" y1="52" x2="230" y2="52" stroke="var(--color-text-secondary)" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+<!-- Shielded motor cable label -->
+<text x="430" y="90" text-anchor="start" font-size="10" fill="var(--color-text-warning)">shielded</text>
+<text x="430" y="103" text-anchor="start" font-size="10" fill="var(--color-text-warning)">motor cable</text>
+
+<!-- MOTOR/PUMP -->
+<rect x="500" y="60" width="100" height="60" rx="8" fill="var(--color-background-secondary)" stroke="var(--color-border-secondary)" stroke-width="1"/>
+<text x="550" y="84" text-anchor="middle" font-size="13" font-weight="500" fill="var(--color-text-primary)" dominant-baseline="central">Motor</text>
+<text x="550" y="102" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">+ Pump</text>
+<line x1="390" y1="90" x2="500" y2="90" stroke="var(--color-text-secondary)" stroke-width="2" marker-end="url(#arr2)"/>
+
+<!-- PRESSURE TRANSDUCER -->
+<rect x="500" y="170" width="100" height="50" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="550" y="191" text-anchor="middle" font-size="12" font-weight="500" fill="var(--color-text-primary)" dominant-baseline="central">Pressure</text>
+<text x="550" y="208" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">transducer</text>
+<!-- 4-20mA line to drive AI2 -->
+<path d="M 500 195 L 360 195 L 360 130 L 390 130" fill="none" stroke="var(--color-text-info)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+<text x="420" y="210" text-anchor="middle" font-size="10" fill="var(--color-text-info)">4–20 mA</text>
+<text x="420" y="223" text-anchor="middle" font-size="10" fill="var(--color-text-info)">signal cable</text>
+<!-- +24V power to transducer -->
+<path d="M 390 145 L 390 250 L 500 250 L 500 210" fill="none" stroke="var(--color-text-success)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr2)"/>
+<text x="455" y="264" text-anchor="middle" font-size="10" fill="var(--color-text-success)">+24V supply</text>
+
+<!-- IoT GATEWAY -->
+<rect x="230" y="310" width="160" height="70" rx="8" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="310" y="338" text-anchor="middle" font-size="13" font-weight="500" fill="var(--color-text-primary)" dominant-baseline="central">IoT Gateway</text>
+<text x="310" y="356" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">RS485 Modbus master</text>
+<text x="310" y="372" text-anchor="middle" font-size="10" fill="var(--color-text-tertiary)" dominant-baseline="central">→ MQTT / Cloud</text>
+
+<!-- RS485 bus line drive ↔ gateway -->
+<path d="M 310 180 L 310 310" fill="none" stroke="var(--color-text-primary)" stroke-width="1.5" marker-end="url(#arr2)"/>
+<text x="316" y="248" text-anchor="start" font-size="10" fill="var(--color-text-primary)">RS485 bus</text>
+<text x="316" y="261" text-anchor="start" font-size="10" fill="var(--color-text-primary)">B+, A−, DGND</text>
+<text x="316" y="274" text-anchor="start" font-size="10" fill="var(--color-text-warning)">Belden 9842</text>
+<text x="316" y="287" text-anchor="start" font-size="10" fill="var(--color-text-warning)">shielded cable</text>
+
+<!-- SPD symbol -->
+<rect x="232" y="283" width="50" height="18" rx="3" fill="none" stroke="var(--color-text-warning)" stroke-width="0.5" stroke-dasharray="3,2"/>
+<text x="257" y="292" text-anchor="middle" font-size="10" fill="var(--color-text-warning)" dominant-baseline="central">SPD RS485</text>
+
+<!-- Cloud/PC -->
+<rect x="500" y="320" width="100" height="50" rx="8" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="550" y="341" text-anchor="middle" font-size="12" font-weight="500" fill="var(--color-text-primary)" dominant-baseline="central">Cloud / PC</text>
+<text x="550" y="358" text-anchor="middle" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">MQTT / SCADA</text>
+<line x1="390" y1="345" x2="500" y2="345" stroke="var(--color-text-tertiary)" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+<text x="445" y="338" text-anchor="middle" font-size="10" fill="var(--color-text-tertiary)">Ethernet/WiFi</text>
+
+<!-- Legend -->
+<rect x="20" y="440" width="640" height="65" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text x="36" y="458" font-size="11" font-weight="500" fill="var(--color-text-secondary)" dominant-baseline="central">Legend:</text>
+<line x1="90" y1="458" x2="120" y2="458" stroke="var(--color-text-secondary)" stroke-width="2"/>
+<text x="126" y="458" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">Power (shielded motor cable)</text>
+<line x1="290" y1="458" x2="320" y2="458" stroke="var(--color-text-info)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="326" y="458" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">4–20 mA signal</text>
+<line x1="90" y1="480" x2="120" y2="480" stroke="var(--color-text-success)" stroke-width="1" stroke-dasharray="3,3"/>
+<text x="126" y="480" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">+24V power</text>
+<line x1="290" y1="480" x2="320" y2="480" stroke="var(--color-text-primary)" stroke-width="1.5"/>
+<text x="326" y="480" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">RS485 bus (B+, A−, DGND)</text>
+<line x1="490" y1="480" x2="520" y2="480" stroke="var(--color-text-tertiary)" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="526" y="480" font-size="11" fill="var(--color-text-secondary)" dominant-baseline="central">Network / cloud</text>
+</svg>
+</div>
+
+<h3>Critical wiring segregation rules for this setup</h3>
+<ol>
+<li><strong>Motor cable (U2,V2,W2):</strong> Always shielded; shield grounded at PE star point at both ends; run in its own conduit or at least 300 mm from signal cables</li>
+<li><strong>Mains input (U1,V1,W1):</strong> Standard power cable in separate conduit from motor cable</li>
+<li><strong>4–20 mA transducer cable:</strong> Shielded, separate from motor cable, shield grounded at drive end only</li>
+<li><strong>RS485 cable:</strong> Shielded, completely separate from motor cable, shield connected at one end only; install SPD at gateway entry</li>
+<li><strong>Gateway power supply:</strong> From a clean 24 VDC SMPS, NOT from the drive's auxiliary output</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════ -->
+<h2 id="s13"><span class="section-num">13.</span> Bill of materials — surrounding equipment list</h2>
+
+<table>
+<tr><th>Item</th><th>Specification</th><th>Notes</th></tr>
+<tr><td><strong>ABB ACQ580-01 VSD</strong></td><td>Size matched to motor kW and mains voltage</td><td>Includes built-in EMC filter, STO, EFB Modbus RTU</td></tr>
+<tr><td><strong>3-phase MCB / Fuses</strong></td><td>GG fuses or type B/C MCB, rated per ACQ580 manual Table (input current × 1.5)</td><td>Drive input protection; ABB provides fuse tables by drive model</td></tr>
+<tr><td><strong>Input contactor (optional)</strong></td><td>AC-3 rated, size per drive input current</td><td>Do NOT use for frequent start/stop — use drive's start command instead</td></tr>
+<tr><td><strong>Shielded motor cable</strong></td><td>3-phase + PE, VFD-rated (low capacitance), e.g. Belden VFD cable or equivalent</td><td>Keep as short as possible; max recommended 100 m without output choke</td></tr>
+<tr><td><strong>Output dV/dt choke (optional)</strong></td><td>ABB output filter for motor cable &gt; 50 m</td><td>Reduces motor winding stress from switching transients</td></tr>
+<tr><td><strong>Input line reactor (optional)</strong></td><td>3–5% impedance, rated for drive input current</td><td>Reduces harmonic distortion on supply; protects against voltage spikes</td></tr>
+<tr><td><strong>Pressure transducer</strong></td><td>4–20 mA, 0–16 bar (or as required), IP67, 3-wire, 24 VDC powered</td><td>Connect to AI2+ and AI2− on drive X2</td></tr>
+<tr><td><strong>RS485 cable</strong></td><td>Belden 9842 (dual twisted pair, shielded, 120 Ω impedance)</td><td>For Modbus RTU bus between drive and gateway</td></tr>
+<tr><td><strong>RS485 SPD</strong></td><td>ABB OVR RS485 (10 kA, IEC 61643-21) or equivalent DIN rail SPD</td><td>Install at gateway RS485 port; essential for non-isolated RS485</td></tr>
+<tr><td><strong>IoT / Modbus gateway</strong></td><td>RS485 Modbus RTU master with Ethernet/WiFi/4G; preferably opto-isolated RS485 port</td><td>Poll interval ≥ 100 ms; configure as Modbus master, slave address matching P58.03</td></tr>
+<tr><td><strong>24 VDC SMPS for gateway</strong></td><td>Separate DIN rail power supply, 24 V, 1–2 A</td><td>Do NOT use drive's +24V output for gateway power</td></tr>
+<tr><td><strong>DIN rail enclosure / panel</strong></td><td>Metal enclosure, IP54 or better for outdoor/wet pump stations</td><td>Grounded metal divider between VSD section and gateway/signal section</td></tr>
+<tr><td><strong>Ground/PE busbar</strong></td><td>Copper busbar, suitable lug/clamp connections</td><td>Star-point grounding for all shields and PE connections</td></tr>
+<tr><td><strong>Cable conduit/tray</strong></td><td>Separate metallic conduit for: (1) power/motor, (2) signal/RS485, (3) control/I/O</td><td>Minimum 300 mm separation between power and signal conduits</td></tr>
+<tr><td><strong>Ferrite core chokes</strong></td><td>Snap-on ferrite, Würth or TDK, sized for cable diameter; 31 material (high permeability at 1–30 MHz)</td><td>Install on RS485 cable near drive entry point and at gateway entry</td></tr>
+<tr><td><strong>USB to RS485 adapter (for PC access)</strong></td><td>Isolated USB-RS485, FTDI chip recommended (e.g. Waveshare isolated or FTDI USB-RS485-WE)</td><td>For commissioning and diagnostics from laptop; use isolated version</td></tr>
+<tr><td><strong>ACX-AP-W control panel</strong></td><td>ACQ580 optional remote panel with IP54 cover</td><td>For wall-mounting outside main enclosure if needed</td></tr>
+<tr><td><strong>Motor thermistor (PTC/NTC)</strong></td><td>Motor embedded thermistor connected to drive DI or thermistor input</td><td>Thermal protection for motor in pump wells</td></tr>
+</table>
+
+<div class="info-box" style="margin-top:1.5rem"><strong>📄 Official ABB documentation links:</strong><br>
+• Product page: <a href="https://www.abb.com/global/en/areas/motion/drives/low-voltage-ac-drives/water-wastewater-drives/acq580" style="color:var(--color-text-info)">abb.com → ACQ580</a><br>
+• Hardware manual (3AXD50000044862): search at <a href="https://library.e.abb.com" style="color:var(--color-text-info)">library.e.abb.com</a><br>
+• Firmware/Modbus manual (3AXD50000035867): same library<br>
+• Surge protection note: search "Technical Note 080 ACQ580" at ABB library<br>
+• Modbus register conversion: search "Technical Note 062" at ABB library
+</div>
+</div>

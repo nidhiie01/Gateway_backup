@@ -1,0 +1,5 @@
+model_code,hw_description,bin_url,
+33901,v1.0 (WiFi + RMII Ethernet + RS485 + SD Card + 4G),https://adiinfi.co.in/IoTGateway/OTA/hello_world.bin,https://adiinfi.co.in/IoTGateway/OTA/AdiNexus_v1_firmware.bin
+40037,v2.0 LITE (WiFi + RMII Ethernet + RTC + RS485 + SD Card + Digital 2 Input),http://adiinfi.co.in/IoTGateway/OTA/AdiNexus_LITE.bin,https://adiinfi.co.in/IoTGateway/OTA/AdiNexus_LITE_firmware.bin
+40039,v2.0 ELITE (WiFi + RMII Ethernet + SPI W5500 Ethernet + RTC + RS485 + SD Card + Digital 2 Input),https://adiinfi.co.in/IoTGateway/OTA/hello_world.bin,https://adiinfi.co.in/IoTGateway/OTA/AdiNexus_ELITE_firmware.bin
+40045,v2.0 PLUS (WiFi + RMII Ethernet + RTC + RS485 + SD Card + Digital 2 Input + 4G),https://adiinfi.co.in/IoTGateway/OTA/hello_world.bin,https://adiinfi.co.in/IoTGateway/OTA/AdiNexus_PLUS_firmware.bin

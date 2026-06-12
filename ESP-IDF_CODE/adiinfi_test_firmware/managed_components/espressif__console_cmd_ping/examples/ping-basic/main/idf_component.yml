@@ -1,0 +1,5 @@
+dependencies:
+  console_cmd_ping:
+    version: '*'
+  idf:
+    version: '>=5.0'

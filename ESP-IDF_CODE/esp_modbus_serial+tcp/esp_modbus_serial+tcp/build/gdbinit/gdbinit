@@ -1,0 +1,2 @@
+source E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/gdbinit/symbols
+source E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/gdbinit/connect

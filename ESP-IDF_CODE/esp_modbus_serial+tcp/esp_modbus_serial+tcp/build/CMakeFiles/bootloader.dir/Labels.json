@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/CMakeFiles/bootloader"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/CMakeFiles/bootloader.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/CMakeFiles/bootloader-complete.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+		},
+		{
+			"file" : "E:/A_DEMO/ESP-IDF_CODE/esp_modbus_serial+tcp/esp_modbus_serial+tcp/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"bootloader"
+		],
+		"name" : "bootloader"
+	}
+}

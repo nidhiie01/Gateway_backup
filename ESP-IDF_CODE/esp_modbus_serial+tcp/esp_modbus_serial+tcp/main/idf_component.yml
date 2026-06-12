@@ -1,0 +1,6 @@
+dependencies:
+  idf: '>=4.1.0'
+  # espressif/esp-modbus:
+  #   path: components/esp_modbus
+  # espressif/esp-modbus: ^2.1.0
+  espressif/ethernet_init: ^0.6.1

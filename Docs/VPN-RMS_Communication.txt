@@ -1,0 +1,54 @@
+`
+1) Connect with Gateway
+From RMS: Click on connect button -> Node service -> Get VPN user and VPN Gateway detail from local server -> Send following required information to Gateway
+
+		- Gateway WAN Ethernet mode: Static, DHCP
+		
+
+		- VPN: 
+			Pub key of peer1.conf
+			private key of peer1.conf
+			preshared key of peer1.conf
+			ip address from peer1.conf this will be allocated to gateway for ex 10.14.14.3
+			endpoint from peer1.conf for example: vpn.adiinfi.co.in
+			Allowed IPs from peer1.conf for ex: 10.14.14.0
+			Allowed IP mask: for ex: 255.255.255.0 in case of AllowedIPs = 10.14.14.0/24
+			Listen port from peer1.conf for ex: ListenPort = 51820
+
+Gateway -> It will connect with VPN -> Once connected send error message or success response with the following detail
+		- Gateway VPN IP, connection status 
+		
+
+2) Connect with  PLC/HMI/Device : Click on connec button -> RMS will send MQTT message to Gateway with the following information
+
+From RMS:
+		- Want to connect PLC over Ethernet? : Is Ethernet PLC
+		- Want to connect PLC over RS485? : Is RS485 PLC
+		- PLC/HMI/Device Ethernet settings
+				- PLC/HMI/Device's Local IP
+				- PLC/HMI/Device's Local Port
+
+		- PLC/HMI/Device Rs485 settings 
+				- Baud rate, parity, stop bit, data bits, slav id
+
+Gateway -> if Over Ethernet: It will create a ethernet proxy for the port forwarding (Increamental port) bridge  
+		-> if Over RS485: It will create a bridge between WAN ethernet TCP and virtual port (for ex 6000) 
+		
+		-> Send following back to RMS
+			- Bridge between Gateway and PLC/HMI/Device connection status 
+			- If Ethernet (This settings need to be used in your PLC/HMI/Device main programming software)
+				- IP to use to connect with PLC/HMI/Device: 10.14.14.3
+				- Port to use to connect with PLC/HMI/Device: 15020
+			- If RS485 (This settings need to be used in virtual port creation in Windows/Linux/MacOS. Once virtual 
+						port is created in your host/local OS, use this port settings in your PLC/HMI/Device main programming software)
+				- IP to use to connect with PLC/HMI/Device: 10.14.14.3
+				- Port to use to connect with PLC/HMI/Device: 6000
+				- Port settings: Baud rate, parity, stop bit, data bits
+				
+============
+RMS:
+make sure disconnect call from service at the time of 
+	- Timeout of 
+	- React page closed or browser closed
+	- Click on disconnect button
+	

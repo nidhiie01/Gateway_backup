@@ -1,0 +1,65 @@
+[Start]
+   |
+   v
+[Setup]
+   |--> Initialize Serial (115200 baud)
+   |--> Initialize Watchdog Timer (10s timeout)
+   |--> Call DownloadParseESConfig()
+   |     |--> Connect to Wi-Fi (SSID: Airtel_brij_2964)
+   |     |    |--> Print "." every 500ms until connected
+   |     |    |--> Print "Wi-Fi connected"
+   |     |--> HTTP GET request to serverUrl
+   |     |    |--> If HTTP fails: Print error, return false
+   |     |--> Parse JSON into config
+   |     |    |--> If parsing fails: Print error, return false
+   |     |--> For each PLC model in JSON:
+   |     |    |--> Deserialize into PlcModel
+   |     |    |--> Add to config.plcModels
+   |     |--> Set isConfigLoaded = true
+   |--> If DownloadParseESConfig() fails:
+   |     |--> Print "Failed to load configuration. Halting."
+   |     |--> Infinite loop (halt)
+   |--> Print configuration details (printConfigDetails())
+   |--> For each PLC model in config:
+   |     |--> Create ModbusInterface (TCP/RTU/ASCII)
+   |     |--> Create ModbusData buffer
+   |     |--> Create TaskParams
+   |     |--> Start FreeRTOS task (readPlcData)
+   |
+   v
+[Loop]
+   |--> If isConfigLoaded:
+   |     |--> Call printFilledJson()
+   |     |    |--> Print JSON with current tag values
+   |     |--> Delay 5000ms (JSON_PRINT_INTERVAL_MS)
+   |--> Call handleSerialCommand()
+   |     |--> If Serial input == "cleanup":
+   |     |    |--> Call cleanup()
+   |     |    |    |--> Stop all tasks
+   |     |    |    |--> Free memory (modbus, modbusData, params)
+   |     |    |    |--> Print "Cleanup completed."
+   |--> Reset Watchdog Timer
+   |--> Loop back
+   |
+   | [Parallel Tasks: readPlcData (for each PLC)]
+   |     |--> Initialize Modbus interface (modbus->begin())
+   |     |--> While true:
+   |     |    |--> Reset Watchdog Timer
+   |     |    |--> For each Modbus tag in PLC:
+   |     |    |    |--> If functionCode == ReadCoils:
+   |     |    |    |    |--> Allocate coil buffer (uint8_t)
+   |     |    |    |    |--> Call modbus->readCoils()
+   |     |    |    |    |--> If success: Update tag->currentValue
+   |     |    |    |    |--> If fail: Print error
+   |     |    |    |    |--> Free coil buffer
+   |     |    |    |--> Else (ReadHoldingRegisters):
+   |     |    |    |    |--> Allocate register buffer (uint16_t)
+   |     |    |    |    |--> Call modbus->readHoldingRegisters()
+   |     |    |    |    |--> If success: Update tag->currentValue
+   |     |    |    |    |--> If fail: Print error
+   |     |    |    |    |--> Free register buffer
+   |     |    |--> Delay for plc->readInterval (default 1000ms)
+   |     |    |--> Loop back
+   |
+   v
+[Continue Loop Indefinitely]

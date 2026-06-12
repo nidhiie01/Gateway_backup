@@ -1,0 +1,32 @@
+## IDF Component Manager Manifest File
+dependencies:
+  ## Required IDF version
+  idf:
+    version: '>=4.1.0'
+  # # Put list of dependencies here
+  # # For components maintained by Espressif:
+  # component: "~1.0.0"
+  # # For 3rd party components:
+  # username/component: ">=1.0.0,<2.0.0"
+  # username2/component2:
+  #   version: "~1.0.0"
+  #   # For transient dependencies `public` flag can be set.
+  #   # `public` flag doesn't have an effect dependencies of the `main` component.
+  #   # All dependencies of `main` are public by default.
+  #   public: true
+  # espressif/arduino-esp32: ^3.2.0
+  # espressif/esp_littlefs: ^2.1.0
+  espressif/esp_modem: =*
+  # bblanchon/arduinojson: ^7.4.1
+  # espressif/esp-modbus: ^1.0.15
+  # espressif/json: ^*
+  # espressif/esp-modbus: ==2.1.0
+  espressif/ethernet_init: ^0.6.1
+  espressif/console_cmd_ping: '*'
+  protocol_examples_common:
+    path: ${IDF_PATH}/examples/common_components/protocol_examples_common
+  # espressif/esp-modbus: ^2.1.0
+  espressif/esp-modbus: '*'
+  # espressif/esp-modbus:
+  #   version: "~1.0.0"
+  espressif/enc28j60: ^1.0.1

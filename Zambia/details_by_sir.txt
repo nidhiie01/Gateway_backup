@@ -1,0 +1,21 @@
+One time development cost for 1 pumphouse with 4 VSDs and 2 Flow meters
+- Dashboards for VSD on/off, pressure, pump status, Fault code
+- Live data monitorng from control room at (data interval 10 seconds) of each
+flow meters and VSDs
+- Realtime pump controling (depends on internet availability)
+- Required alarms at realtime
+- Reports
+- Required historian at 15 minutes of interval
+
+
+VSD: ABB ACQ580 
+Start/Stop Command	0x0001	Coil (BOOL)	1 bit	1 = Run, 0 = Stop
+Pump Status	0x1001	Input Register (UINT16)	1 word	Bit-coded status (Running, Fault, Ready)
+Actual Speed Feedback	0x1002	Input Register (INT16)	1 word	Value in 0.01 Hz units
+Motor Current	0x1003	Input Register (INT16)	1 word	Value in 0.1 A units
+Fault Code	0x2001	Input Register (UINT16)	1 word	Drive diagnostic code
+
+
+
+- Historian: 1 months of data storage as per data intervals (e.g. 15 min
+interval) and reqruied data size

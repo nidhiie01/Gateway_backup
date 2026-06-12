@@ -1,0 +1,165 @@
+typedef enum
+{
+    ADINEXUS_CMD_UNKNOWN=-1,
+    ADINEXUS_CMD_GET_CONFIG, // command for getting config file from MQTT
+	ADINEXUS_CMD_GET_CONFIG_RESPONSE,
+    ADINEXUS_CMD_OTA_START,     //OTA upadte command
+	ADINEXUS_CMD_OTA_START_RESPONSE,
+    ADINEXUS_CMD_GET_STATUS,
+	ADINEXUS_CMD_GET_STATUS_RESPONSE,
+    ADINEXUS_CMD_START_COMMISSION
+} mqtt_commands_t;
+
+
+1. Command: ADINEXUS_CMD_GET_CONFIG
+===============================
+Gateway			Cloud
+      ADINEXUS_CMD_GET_CONFIG
+	<--------------
+    
+	ADINEXUS_CMD_GET_CONFIG_RESPONSE
+    --------------->
+	
+MQTT JSON FORMAT:
+----------------
+Cloud to Gateway: ADINEXUS_CMD_GET_CONFIG
+{
+  "cmdId":ADINEXUS_CMD_GET_CONFIG,
+  "packet": {
+				GatewayConfig MQTT JSON 
+			} 
+}
+Gateway to Cloud Response: ADINEXUS_CMD_GET_CONFIG_RESPONSE
+{
+  "cmdId":ADINEXUS_CMD_GET_CONFIG_RESPONSE,
+  "packet": {
+				status: true/false
+			} 
+}
+
+C Structure:
+-----------
+1. Generic command structure:
+typedef struct 
+{
+	mqtt_commands_t cmd;
+	void *packet;
+}communication_cmd;
+
+
+2. Gateway Config packet structure for ADINEXUS_CMD_GET_CONFIG command
+	typedef struct
+    {
+        GatewaySettings *gatewaySettings;
+        CommunicationSettings *communicationSettings;
+        PlcConfig *plcConfigs;
+        int plcConfigsCount;
+        AlarmConfig *alarmConfigs;
+        int alarmConfigsCount;
+        ModbusCommand *modbusCommands;
+        int modbusCommandsCount;
+        char *version;
+        char *exportedAt;
+    } GatewayConfig;
+
+  Response structure of ADINEXUS_CMD_GET_CONFIG_RESPONSE
+	typedef struct
+    {
+        bool status;
+    } GatewayConfigResposnse;
+  
+  
+2. Command: ADINEXUS_CMD_OTA_START
+===============================
+Gateway			Cloud
+      ADINEXUS_CMD_OTA_START
+	<--------------
+    
+	ADINEXUS_CMD_OTA_START_RESPONSE
+    --------------->
+	
+MQTT JSON FORMAT:
+----------------
+Cloud to Gateway: ADINEXUS_CMD_GET_CONFIG
+{
+  "cmdId":ADINEXUS_CMD_OTA_START,
+  "packet": {
+				binPath:"http://asdbajd"
+				PTPath:"http://asdbajd"		
+			} 
+}
+Gateway to Cloud Response: ADINEXUS_CMD_OTA_START_RESPONSE
+{
+  "cmdId":ADINEXUS_CMD_OTA_START_RESPONSE,
+  "packet": {
+				status: true/false
+			} 
+}
+
+C Structure:
+-----------
+1. Generic command structure:
+typedef struct 
+{
+	mqtt_commands_t cmd;
+	void *packet;
+}communication_cmd;
+
+
+2. Gateway Config packet structure for ADINEXUS_CMD_OTA_START command
+	typedef struct
+    {
+        char *binPath;
+        char *PTPath;
+       
+    } OTADetail;
+
+  Response structure of ADINEXUS_CMD_OTA_START_RESPONSE
+	typedef struct
+    {
+        bool status;
+    } OTADetailResposnse;  
+	
+
+3. Command:ADINEXUS_CMD_GET_STATUS
+===============================
+Gateway			Cloud
+      ADINEXUS_CMD_GET_STATUS
+	<--------------
+    
+	ADINEXUS_CMD_GET_STATUS_RESPONSE
+    --------------->
+	
+MQTT JSON FORMAT:
+----------------
+Cloud to Gateway: ADINEXUS_CMD_GET_STATUS
+{
+  "cmdId":ADINEXUS_CMD_GET_STATUS,
+  packet:{}
+}
+
+Gateway to Cloud Response: ADINEXUS_CMD_GET_STATUS_RESPONSE
+{
+  "cmdId":ADINEXUS_CMD_GET_STATUS_RESPONSE,
+  "packet": {
+				isOnline: true/false
+			} 
+}
+
+C Structure:
+-----------
+1. Generic command structure:
+typedef struct 
+{
+	mqtt_commands_t cmd;
+	void *packet;
+}communication_cmd;
+
+
+
+
+  Response structure of ADINEXUS_CMD_GET_STATUS_RESPONSE
+	typedef struct
+    {
+        bool isOnline;
+    } OTADetailResposnse;  

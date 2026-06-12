@@ -1,0 +1,13 @@
+dependencies:
+  espressif/console_simple_init:
+    public: true
+    version: '>=1.1.0'
+  idf:
+    version: '>=5.0'
+description: The component provides a console where the 'ping' command can be executed.
+repository: git://github.com/espressif/esp-protocols.git
+repository_info:
+  commit_sha: 7a203cf085fb8c049b17eee1f6ccfdd9bee4736c
+  path: components/console_cmd_ping
+url: https://github.com/espressif/esp-protocols/tree/master/components/console_cmd_ping
+version: 1.2.0
