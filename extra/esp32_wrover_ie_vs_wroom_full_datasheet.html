@@ -1,0 +1,348 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.tabs{display:flex;gap:6px;padding:8px 0 14px;flex-wrap:wrap}
+.tab{padding:5px 14px;border-radius:12px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:12px;transition:all .15s}
+.tab.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+.section{display:none}
+.section.on{display:block}
+
+/* ── SPEC TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{background:var(--color-background-tertiary);color:var(--color-text-secondary);font-weight:500;font-size:11px;padding:8px 10px;text-align:left;border:0.5px solid var(--color-border-tertiary)}
+td{padding:7px 10px;border:0.5px solid var(--color-border-tertiary);vertical-align:top;color:var(--color-text-primary);line-height:1.5;word-break:break-word}
+tr:nth-child(even) td{background:var(--color-background-secondary)}
+.diff-row td:nth-child(2){color:var(--color-text-info);font-weight:500}
+.diff-row td:nth-child(3){color:var(--color-text-warning);font-weight:500}
+.warn td:nth-child(2){color:var(--color-text-danger)!important}
+.sec-hd{font-size:10px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;padding:10px 10px 4px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-bottom:none;text-transform:uppercase}
+.badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;white-space:nowrap}
+.bi{background:var(--color-background-info);color:var(--color-text-info)}
+.bw{background:var(--color-background-warning);color:var(--color-text-warning)}
+.bd{background:var(--color-background-danger);color:var(--color-text-danger)}
+.bs{background:var(--color-background-success);color:var(--color-text-success)}
+.hwr{color:var(--color-text-info);font-weight:500}
+.hwm{color:var(--color-text-secondary)}
+
+/* ── PIN DIFF ── */
+.pin-wrap{display:flex;gap:10px;font-size:11px;font-family:var(--font-mono,monospace);padding:4px 0}
+.pcol{flex:1;min-width:0}
+.pcol-center{width:18px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:38px}
+.mod-hdr{font-size:12px;font-weight:500;color:var(--color-text-primary);text-align:center;padding:0 0 8px}
+.mod-sub{font-size:10px;color:var(--color-text-tertiary);text-align:center;margin-top:-6px;padding-bottom:8px}
+.prow{display:flex;align-items:center;height:20px;margin:1px 0}
+.pcol.left .prow{flex-direction:row-reverse}
+.pbox{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+.pnum{width:18px;text-align:center;color:var(--color-text-tertiary);font-size:10px;flex-shrink:0}
+.plbl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--color-text-secondary);padding:0 3px;font-size:10px}
+.pcol.left .plbl{text-align:right}
+.crow{height:22px;display:flex;align-items:center;justify-content:center}
+.diffmark{width:10px;height:10px;border-radius:50%;background:var(--color-text-danger);opacity:.85}
+.dr-wr{background:rgba(29,158,117,.15);border-left:2px solid #1D9E75}
+.dr-wm{background:rgba(214,105,8,.12);border-right:2px solid #D66908}
+/* pin color coding */
+.c-gnd{background:#5F5E5A}
+.c-pwr{background:#E85D24}
+.c-adc{background:#0F6E56}
+.c-dac{background:#533AB7}
+.c-spi{background:#185FA5}
+.c-nc{background:#B4B2A9;opacity:.55}
+/* legend */
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 0 4px}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--color-text-secondary)}
+.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* pros cons */
+.pc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:4px 0}
+.pc-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.pc-head{padding:10px 12px 8px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.pc-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.pc-sub{font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+.pc-sect{padding:8px 12px 6px}
+.pc-sechd{font-size:10px;font-weight:500;letter-spacing:.05em;margin-bottom:5px}
+.pc-sechd.pro{color:var(--color-text-success)}
+.pc-sechd.con{color:var(--color-text-danger)}
+.pc-item{font-size:11px;color:var(--color-text-secondary);padding:2px 0 2px 13px;position:relative;line-height:1.5}
+.pc-item::before{position:absolute;left:0;top:3px;font-size:9px}
+.pc-item.pro::before{content:"✓";color:var(--color-text-success)}
+.pc-item.con::before{content:"✕";color:var(--color-text-danger)}
+.divhr{height:0.5px;background:var(--color-border-tertiary);margin:0 12px}
+</style>
+
+<h2 class="sr-only">Full datasheet comparison of ESP32-WROVER-IE N16R8 versus ESP32-WROOM-32D and WROOM-32U based on official Espressif datasheets</h2>
+
+<div class="tabs">
+  <button class="tab on" onclick="showTab('specs',this)">Full specs</button>
+  <button class="tab" onclick="showTab('pins',this)">Pin diff (visual)</button>
+  <button class="tab" onclick="showTab('procon',this)">Pros &amp; cons</button>
+</div>
+
+<!-- ═══════════════ SPECS ═══════════════ -->
+<div class="section on" id="specs">
+
+<div class="sec-hd">Module identity (from datasheets)</div>
+<table>
+<tr><th style="width:32%">Parameter</th><th class="hwr">WROVER-IE N16R8</th><th class="hwm">WROOM-32D / 32U</th></tr>
+<tr class="diff-row"><td>Datasheet version</td><td>v2.3 (ESP32-WROVER-E/IE DS)</td><td>v2.4 (ESP32-WROOM-32 DS) <span class="badge bw">NRND</span></td></tr>
+<tr class="diff-row"><td>NRND status</td><td>No — active product</td><td><span class="badge bd">NRND — Not Recommended For New Designs</span></td></tr>
+<tr class="diff-row"><td>Core chip</td><td>ESP32-D0WD-V3 or ESP32-D0WDR2-V3 <span class="badge bi">rev3 only</span></td><td>ESP32-D0WD (rev mix) <span class="badge bw">may need ECO workarounds</span></td></tr>
+<tr><td>CPU</td><td colspan="2">Xtensa dual-core LX6, up to 240 MHz</td></tr>
+<tr><td>Wi-Fi</td><td colspan="2">802.11 b/g/n, 2412–2484 MHz, up to 150 Mbps</td></tr>
+<tr><td>Bluetooth</td><td colspan="2">BT v4.2 BR/EDR + BLE</td></tr>
+<tr><td>Crystal</td><td colspan="2">40 MHz</td></tr>
+</table>
+
+<div class="sec-hd">Memory (directly from datasheets)</div>
+<table>
+<tr><th>Parameter</th><th class="hwr">WROVER-IE N16R8</th><th class="hwm">WROOM-32D / 32U</th></tr>
+<tr class="diff-row"><td>SPI Flash</td><td>16 MB Quad SPI <span class="badge bi">4× more</span></td><td>4 MB (default; 8/16 MB on custom order)</td></tr>
+<tr class="diff-row"><td>PSRAM</td><td>8 MB Quad SPI, 80 MHz <span class="badge bi">unique to WROVER</span></td><td>None</td></tr>
+<tr><td>Internal SRAM</td><td colspan="2">520 KB</td></tr>
+<tr><td>Internal ROM</td><td colspan="2">448 KB</td></tr>
+<tr><td>RTC FAST memory</td><td colspan="2">8 KB SRAM</td></tr>
+<tr><td>RTC SLOW memory</td><td colspan="2">8 KB SRAM</td></tr>
+<tr><td>eFuse</td><td colspan="2">1 Kbit (256 b system, 768 b user)</td></tr>
+<tr class="diff-row"><td>Max usable heap (Wi-Fi on)</td><td>~4 MB (PSRAM mapped via ESP-IDF) <span class="badge bs">massive</span></td><td>~160–200 KB internal only <span class="badge bw">tight</span></td></tr>
+</table>
+
+<div class="sec-hd">Physical &amp; antenna</div>
+<table>
+<tr><th>Parameter</th><th class="hwr">WROVER-IE N16R8</th><th class="hwm">WROOM-32D / 32U</th></tr>
+<tr class="diff-row"><td>Dimensions (mm)</td><td>18.0 × 31.4 × 3.3</td><td>32D: 18.0 × 25.5 × 3.1 &nbsp;|&nbsp; 32U: 18.0 × 19.2 × 3.2</td></tr>
+<tr class="diff-row"><td>Module longer by</td><td>+5.9 mm vs 32D <span class="badge bd">NOT drop-in</span></td><td>Baseline reference</td></tr>
+<tr class="diff-row"><td>Antenna — 32D equivalent</td><td>IPEX/u.FL connector (Hirose U.FL, I-PEX MHF I, Amphenol AMC)</td><td>32D: on-board PCB trace antenna</td></tr>
+<tr class="diff-row"><td>Antenna — 32U equivalent</td><td>Same IPEX/u.FL connector</td><td>32U: IPEX/u.FL connector (same type)</td></tr>
+<tr class="diff-row"><td>Keepout zone (antenna)</td><td>No keepout (external antenna)</td><td>32D: PCB keepout zone required on baseboard</td></tr>
+<tr><td>Castellated pad count</td><td colspan="2">38 pads + 1 GND EPAD (pin 39)</td></tr>
+<tr><td>Operating voltage</td><td colspan="2">3.0 V – 3.6 V (typ. 3.3 V)</td></tr>
+<tr><td>Operating temperature</td><td colspan="2">–40 °C to +85 °C</td></tr>
+<tr><td>Storage temperature</td><td colspan="2">–40 °C to +105 °C</td></tr>
+<tr><td>MSL</td><td colspan="2">Level 3</td></tr>
+</table>
+
+<div class="sec-hd">Power / current (from datasheets)</div>
+<table>
+<tr><th>Parameter</th><th class="hwr">WROVER-IE N16R8</th><th class="hwm">WROOM-32D / 32U</th></tr>
+<tr><td>Min current from supply</td><td colspan="2">500 mA</td></tr>
+<tr><td>Average active current</td><td colspan="2">80 mA</td></tr>
+<tr><td>TX peak (802.11b 1 Mbps)</td><td colspan="2">350 mA (WROVER DS Table 16)</td></tr>
+<tr><td>TX peak (802.11g 54 Mbps)</td><td colspan="2">243 mA</td></tr>
+<tr><td>TX peak (802.11n MCS7)</td><td colspan="2">233 mA</td></tr>
+<tr><td>RX current (HT20)</td><td colspan="2">108 mA</td></tr>
+<tr class="diff-row"><td>PSRAM activity overhead</td><td>Additional load during PSRAM bursts <span class="badge bw">factor in</span></td><td>None</td></tr>
+</table>
+
+<div class="sec-hd">RF characteristics (from datasheets)</div>
+<table>
+<tr><th>Parameter</th><th class="hwr">WROVER-IE N16R8</th><th class="hwm">WROOM-32D / 32U</th></tr>
+<tr><td>Wi-Fi TX power (802.11b 1 Mbps)</td><td>19.5 dBm</td><td>18.5 dBm (typ)</td></tr>
+<tr><td>Wi-Fi TX power (802.11n MCS7)</td><td>13.0 dBm</td><td>13 dBm</td></tr>
+<tr><td>Wi-Fi RX sensitivity (802.11b 1 Mbps)</td><td>–97.0 dBm (WROVER DS)</td><td>–98 dBm (WROOM DS)</td></tr>
+<tr><td>Wi-Fi RX sensitivity (802.11n HT20 MCS7)</td><td>–72.0 dBm</td><td>–71 dBm</td></tr>
+<tr><td>BLE RX sensitivity (@30.8% PER)</td><td>–93 dBm (typ)</td><td>–97 dBm (typ)</td></tr>
+<tr><td>BLE TX power (typ)</td><td colspan="2">0 dBm, range –12 to +9 dBm</td></tr>
+<tr class="diff-row"><td>Antenna gain</td><td>External antenna dependent (cert tested with monopole, max 2.33 dBi)</td><td>32D: PCB trace ~2 dBi; 32U: external dependent</td></tr>
+</table>
+
+<div class="sec-hd">Peripheral availability</div>
+<table>
+<tr><th>Peripheral</th><th class="hwr">WROVER-IE</th><th class="hwm">WROOM-32D / 32U</th></tr>
+<tr><td>GPIO (user-accessible)</td><td>Up to 24 (datasheet sec 1.1)</td><td>Up to 34 (all exposed, minus flash pins)</td></tr>
+<tr><td>UART0 (U0TXD/U0RXD)</td><td colspan="2">Pins 35/34 — same both modules</td></tr>
+<tr class="diff-row warn"><td>UART2 (IO16/IO17)</td><td>BLOCKED — IO16/17 wired to PSRAM internally</td><td>FREE — IO16 pin 27, IO17 pin 28</td></tr>
+<tr><td>HSPI (IO12–14)</td><td colspan="2">Available — pins 13/14/16</td></tr>
+<tr><td>VSPI (IO5/18/19/23)</td><td colspan="2">Available — pins 29/30/31/37</td></tr>
+<tr><td>I2C SDA/SCL</td><td colspan="2">IO21/IO22 — pins 33/36</td></tr>
+<tr><td>ADC1 (IO32–IO39)</td><td colspan="2">All exposed — input-only for IO34–39</td></tr>
+<tr><td>ADC2 with Wi-Fi</td><td colspan="2">Disabled when Wi-Fi active (both modules)</td></tr>
+<tr><td>DAC (IO25/IO26)</td><td colspan="2">Pins 10/11</td></tr>
+<tr><td>Touch sensor (10 ch)</td><td colspan="2">Available (limited when Wi-Fi active)</td></tr>
+<tr><td>I2S</td><td colspan="2">2× I2S</td></tr>
+<tr><td>PWM (LED)</td><td colspan="2">16 channels</td></tr>
+<tr><td>TWAI/CAN</td><td colspan="2">1× (any GPIO via matrix)</td></tr>
+<tr><td>Ethernet MAC</td><td colspan="2">1× (needs external PHY)</td></tr>
+<tr class="diff-row"><td>Camera (DVP)</td><td>Yes — PSRAM holds frame buffer <span class="badge bs">recommended</span></td><td>4 MB flash + no PSRAM = very limited <span class="badge bw">impractical</span></td></tr>
+</table>
+
+<div class="sec-hd">Flash-reserved pins (not user-accessible — both modules)</div>
+<table>
+<tr><th>Pin (module pad)</th><th>GPIO</th><th>Function</th></tr>
+<tr><td>17</td><td>GPIO9 (WROOM) / NC (WROVER)</td><td>SHD/SD2 — flash internal</td></tr>
+<tr><td>18</td><td>GPIO10 (WROOM) / NC (WROVER)</td><td>SWP/SD3 — flash internal</td></tr>
+<tr><td>19</td><td>GPIO11 (WROOM) / NC (WROVER)</td><td>SCS/CMD — flash internal</td></tr>
+<tr><td>20</td><td>GPIO6 (WROOM) / NC (WROVER)</td><td>SCK/CLK — flash internal</td></tr>
+<tr><td>21</td><td>GPIO7 (WROOM) / NC (WROVER)</td><td>SDO/SD0 — flash internal</td></tr>
+<tr><td>22</td><td>GPIO8 (WROOM) / NC (WROVER)</td><td>SDI/SD1 — flash internal</td></tr>
+</table>
+
+</div>
+
+<!-- ═══════════════ PIN DIFF ═══════════════ -->
+<div class="section" id="pins">
+<div class="leg">
+  <div class="li"><div class="ld c-pwr"></div>Power/EN</div>
+  <div class="li"><div class="ld c-gnd"></div>GND</div>
+  <div class="li"><div class="ld c-adc"></div>ADC/input-only</div>
+  <div class="li"><div class="ld c-dac"></div>DAC/Touch/ADC I/O</div>
+  <div class="li"><div class="ld c-spi"></div>GPIO/SPI/UART/I2C</div>
+  <div class="li"><div class="ld c-nc"></div>NC/Reserved</div>
+  <div class="li"><div class="ld" style="background:#1D9E75"></div>WROVER difference</div>
+  <div class="li"><div class="ld" style="background:#D66908"></div>WROOM difference</div>
+</div>
+<div style="font-size:11px;color:var(--color-text-tertiary);padding:0 0 8px">Filled circle in centre = pin differs between modules</div>
+
+<div class="pin-wrap" id="pinwrap">
+  <div class="pcol left" id="wr-col">
+    <div class="mod-hdr" style="color:var(--color-text-info)">WROVER-IE N16R8</div>
+    <div class="mod-sub">DS v2.3 · 38 pins</div>
+  </div>
+  <div class="pcol-center" id="ctr-col"></div>
+  <div class="pcol right" id="wm-col">
+    <div class="mod-hdr">WROOM-32D / 32U</div>
+    <div class="mod-sub">DS v2.4 · 38 pins</div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ PROS/CONS ═══════════════ -->
+<div class="section" id="procon">
+<div class="pc-grid">
+  <div class="pc-card" style="border-top:3px solid var(--color-border-info)">
+    <div class="pc-head">
+      <div class="pc-name">ESP32-WROVER-IE N16R8</div>
+      <div class="pc-sub">Datasheet v2.3 · Active product</div>
+    </div>
+    <div class="pc-sect">
+      <div class="pc-sechd pro">Pros (from datasheet)</div>
+      <div class="pc-item pro">8 MB PSRAM — heap extends to ~4 MB with Wi-Fi active</div>
+      <div class="pc-item pro">16 MB flash — large OTA + LittleFS + firmware all fit</div>
+      <div class="pc-item pro">ESP32-D0WD-V3 chip rev3 only — no ECO patches needed</div>
+      <div class="pc-item pro">IPEX/u.FL connector — Hirose U.FL / I-PEX MHF I compatible</div>
+      <div class="pc-item pro">External antenna: max gain 2.33 dBi (certified monopole)</div>
+      <div class="pc-item pro">Camera applications: PSRAM holds full DVP frame buffer</div>
+      <div class="pc-item pro">Active product — not NRND</div>
+    </div>
+    <div class="divhr"></div>
+    <div class="pc-sect">
+      <div class="pc-sechd con">Cons (from datasheet)</div>
+      <div class="pc-item con">IO16 &amp; IO17 reserved — connected to PSRAM SPI, do not use</div>
+      <div class="pc-item con">31.4 mm long — 5.9 mm longer than WROOM, not drop-in</div>
+      <div class="pc-item con">Requires external antenna + IPEX cable (not included)</div>
+      <div class="pc-item con">PSRAM adds board-level current spikes during burst access</div>
+      <div class="pc-item con">Higher BOM cost and assembly complexity</div>
+    </div>
+    <div class="divhr"></div>
+    <div class="pc-sect">
+      <div class="pc-sechd" style="color:var(--color-text-tertiary)">Best for (from applications list)</div>
+      <div class="pc-item neu" style="padding-left:0">Camera streaming, speech recognition, image recognition, audio devices, large IoT data loggers, TLS/HTTPS with large payloads</div>
+    </div>
+  </div>
+
+  <div class="pc-card" style="border-top:3px solid var(--color-border-tertiary)">
+    <div class="pc-head">
+      <div class="pc-name">ESP32-WROOM-32D / 32U</div>
+      <div class="pc-sub">Datasheet v2.4 · <span style="color:var(--color-text-danger)">NRND</span></div>
+    </div>
+    <div class="pc-sect">
+      <div class="pc-sechd pro">Pros (from datasheet)</div>
+      <div class="pc-item pro">IO16 &amp; IO17 free — UART2 fully available</div>
+      <div class="pc-item pro">32D: 25.5 mm — smaller, easier to fit on tight boards</div>
+      <div class="pc-item pro">32D: built-in PCB trace antenna — zero extra components</div>
+      <div class="pc-item pro">32U: same tiny footprint + IPEX connector for external antenna</div>
+      <div class="pc-item pro">Lower current spikes (no PSRAM activity)</div>
+      <div class="pc-item pro">Lowest cost, widest availability, massive community</div>
+      <div class="pc-item pro">8/16 MB flash variants available on custom order</div>
+    </div>
+    <div class="divhr"></div>
+    <div class="pc-sect">
+      <div class="pc-sechd con">Cons (from datasheet)</div>
+      <div class="pc-item con">NRND — Espressif does not recommend for new designs</div>
+      <div class="pc-item con">No PSRAM — heap ~160–200 KB with Wi-Fi on</div>
+      <div class="pc-item con">4 MB flash default — OTA + LittleFS requires careful partitioning</div>
+      <div class="pc-item con">ESP32-D0WD chip may be rev1 — check errata / ECO document</div>
+      <div class="pc-item con">Camera/audio: no frame buffer RAM available</div>
+      <div class="pc-item con">HTTPS/TLS: large cert chains risk heap exhaustion</div>
+    </div>
+    <div class="divhr"></div>
+    <div class="pc-sect">
+      <div class="pc-sechd" style="color:var(--color-text-tertiary)">Best for</div>
+      <div class="pc-item neu" style="padding-left:0">Simple sensors, MQTT, UART2 required, cost-sensitive, open-air installs (32D), existing designs only (NRND)</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
+}
+
+const pins=[
+  {n:1, wrl:'GND',wrc:'c-gnd', wml:'GND',wmc:'c-gnd', same:true},
+  {n:2, wrl:'3V3',wrc:'c-pwr', wml:'3V3',wmc:'c-pwr', same:true},
+  {n:3, wrl:'EN',wrc:'c-pwr', wml:'EN',wmc:'c-pwr', same:true},
+  {n:4, wrl:'SENSOR_VP / IO36',wrc:'c-adc', wml:'SENSOR_VP / IO36',wmc:'c-adc', same:true},
+  {n:5, wrl:'SENSOR_VN / IO39',wrc:'c-adc', wml:'SENSOR_VN / IO39',wmc:'c-adc', same:true},
+  {n:6, wrl:'IO34',wrc:'c-adc', wml:'IO34',wmc:'c-adc', same:true},
+  {n:7, wrl:'IO35',wrc:'c-adc', wml:'IO35',wmc:'c-adc', same:true},
+  {n:8, wrl:'IO32 / Touch9',wrc:'c-dac', wml:'IO32 / Touch9',wmc:'c-dac', same:true},
+  {n:9, wrl:'IO33 / Touch8',wrc:'c-dac', wml:'IO33 / Touch8',wmc:'c-dac', same:true},
+  {n:10, wrl:'IO25 / DAC1',wrc:'c-dac', wml:'IO25 / DAC1',wmc:'c-dac', same:true},
+  {n:11, wrl:'IO26 / DAC2',wrc:'c-dac', wml:'IO26 / DAC2',wmc:'c-dac', same:true},
+  {n:12, wrl:'IO27 / Touch7',wrc:'c-dac', wml:'IO27 / Touch7',wmc:'c-dac', same:true},
+  {n:13, wrl:'IO14 / HSPI_CLK',wrc:'c-spi', wml:'IO14 / HSPI_CLK',wmc:'c-spi', same:true},
+  {n:14, wrl:'IO12 / HSPI_MISO',wrc:'c-spi', wml:'IO12 / HSPI_MISO',wmc:'c-spi', same:true},
+  {n:15, wrl:'GND',wrc:'c-gnd', wml:'GND',wmc:'c-gnd', same:true},
+  {n:16, wrl:'IO13 / HSPI_MOSI',wrc:'c-spi', wml:'IO13 / HSPI_MOSI',wmc:'c-spi', same:true},
+  {n:17, wrl:'NC (flash SHD/SD2)',wrc:'c-nc', wml:'SHD/SD2 = GPIO9',wmc:'c-nc', same:true},
+  {n:18, wrl:'NC (flash SWP/SD3)',wrc:'c-nc', wml:'SWP/SD3 = GPIO10',wmc:'c-nc', same:true},
+  {n:19, wrl:'NC (flash SCS/CMD)',wrc:'c-nc', wml:'SCS/CMD = GPIO11',wmc:'c-nc', same:true},
+  {n:20, wrl:'NC (flash SCK/CLK)',wrc:'c-nc', wml:'SCK/CLK = GPIO6',wmc:'c-nc', same:true},
+  {n:21, wrl:'NC (flash SDO/SD0)',wrc:'c-nc', wml:'SDO/SD0 = GPIO7',wmc:'c-nc', same:true},
+  {n:22, wrl:'NC (flash SDI/SD1)',wrc:'c-nc', wml:'SDI/SD1 = GPIO8',wmc:'c-nc', same:true},
+  {n:23, wrl:'IO15 / HSPI_CS',wrc:'c-spi', wml:'IO15 / HSPI_CS',wmc:'c-spi', same:true},
+  {n:24, wrl:'IO2 / Touch2',wrc:'c-spi', wml:'IO2 / Touch2',wmc:'c-spi', same:true},
+  {n:25, wrl:'IO0 / BOOT',wrc:'c-spi', wml:'IO0 / BOOT',wmc:'c-spi', same:true},
+  {n:26, wrl:'IO4 / Touch0',wrc:'c-spi', wml:'IO4 / Touch0',wmc:'c-spi', same:true},
+  {n:27, wrl:'NC (PSRAM internal)',wrc:'c-nc', wml:'IO16 / U2RXD',wmc:'c-spi', same:false},
+  {n:28, wrl:'NC (PSRAM internal)',wrc:'c-nc', wml:'IO17 / U2TXD',wmc:'c-spi', same:false},
+  {n:29, wrl:'IO5 / VSPI_CS',wrc:'c-spi', wml:'IO5 / VSPI_CS',wmc:'c-spi', same:true},
+  {n:30, wrl:'IO18 / VSPI_CLK',wrc:'c-spi', wml:'IO18 / VSPI_CLK',wmc:'c-spi', same:true},
+  {n:31, wrl:'IO19 / VSPI_MISO',wrc:'c-spi', wml:'IO19 / VSPI_MISO',wmc:'c-spi', same:true},
+  {n:32, wrl:'NC',wrc:'c-nc', wml:'NC',wmc:'c-nc', same:true},
+  {n:33, wrl:'IO21 / I2C_SDA',wrc:'c-spi', wml:'IO21 / I2C_SDA',wmc:'c-spi', same:true},
+  {n:34, wrl:'IO3 / U0RXD',wrc:'c-spi', wml:'IO3 / U0RXD',wmc:'c-spi', same:true},
+  {n:35, wrl:'IO1 / U0TXD',wrc:'c-spi', wml:'IO1 / U0TXD',wmc:'c-spi', same:true},
+  {n:36, wrl:'IO22 / I2C_SCL',wrc:'c-spi', wml:'IO22 / I2C_SCL',wmc:'c-spi', same:true},
+  {n:37, wrl:'IO23 / VSPI_MOSI',wrc:'c-spi', wml:'IO23 / VSPI_MOSI',wmc:'c-spi', same:true},
+  {n:38, wrl:'GND',wrc:'c-gnd', wml:'GND',wmc:'c-gnd', same:true},
+];
+
+const wrc=document.getElementById('wr-col');
+const ctr=document.getElementById('ctr-col');
+const wmc=document.getElementById('wm-col');
+
+pins.forEach(p=>{
+  const wrBg=p.same?'':'dr-wr';
+  const wmBg=p.same?'':'dr-wm';
+
+  const wrRow=document.createElement('div');
+  wrRow.className='prow '+wrBg;
+  wrRow.innerHTML=`<div class="plbl">${p.wrl}</div><div class="pnum">${p.n}</div><div class="pbox ${p.wrc}"></div>`;
+  wrc.appendChild(wrRow);
+
+  const cRow=document.createElement('div');
+  cRow.className='crow';
+  if(!p.same) cRow.innerHTML='<div class="diffmark"></div>';
+  ctr.appendChild(cRow);
+
+  const wmRow=document.createElement('div');
+  wmRow.className='prow '+wmBg;
+  wmRow.innerHTML=`<div class="pbox ${p.wmc}"></div><div class="pnum">${p.n}</div><div class="plbl">${p.wml}</div>`;
+  wmc.appendChild(wmRow);
+});
+</script>

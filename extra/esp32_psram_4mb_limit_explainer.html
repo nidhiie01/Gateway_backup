@@ -1,0 +1,175 @@
+
+<style>
+*{box-sizing:border-box}
+.tabs{display:flex;gap:6px;padding:0 0 14px;flex-wrap:wrap}
+.tab{padding:5px 14px;border-radius:12px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:12px}
+.tab.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+.sec{display:none}.sec.on{display:block}
+
+/* reason cards */
+.reasons{display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.rcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;border-left:3px solid var(--color-border-info)}
+.rcard.warn{border-left-color:var(--color-border-danger)}
+.rcard.ok{border-left-color:var(--color-border-success)}
+.rtitle{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.rbody{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.code{font-family:var(--font-mono);background:var(--color-background-secondary);padding:1px 5px;border-radius:3px;font-size:11px;color:var(--color-text-primary)}
+.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.scard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.sval{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.slbl{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+</style>
+
+<h2 class="sr-only">Why only 4 MB of the 8 MB PSRAM on ESP32-WROVER-IE N16R8 is accessible, explained through the ESP32 chip's MMU address space limits</h2>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('map',this)">Address map</button>
+  <button class="tab" onclick="sw('why',this)">Why the limit</button>
+  <button class="tab" onclick="sw('workaround',this)">Any workaround?</button>
+</div>
+
+<div class="sec on" id="map">
+<svg width="100%" viewBox="0 0 680 520" role="img">
+<title>ESP32 32-bit address space showing PSRAM mapping window of 4 MB</title>
+<desc>The ESP32 CPU has a 32-bit address space. PSRAM is mapped into a dedicated 4 MB window in the data memory region. The upper 4 MB of the 8 MB PSRAM chip physically exists but falls outside this window and is unreachable.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="6" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+  </pattern>
+</defs>
+
+<!-- Title -->
+<text class="th" x="340" y="28" text-anchor="middle">ESP32 32-bit address space (4 GB total)</text>
+
+<!-- ── Left column: full 4 GB address space (schematic, proportional-ish) ── -->
+<text class="ts" x="168" y="58" text-anchor="middle">CPU address space</text>
+
+<!-- 0x3F80_0000 label at top of PSRAM window -->
+<text class="ts" x="66" y="122" text-anchor="end" fill="var(--color-text-tertiary)">0x3FFF_FFFF</text>
+<!-- Full internal SRAM region -->
+<g class="c-teal"><rect x="70" y="128" width="196" height="30" rx="3" stroke-width="0.5"/>
+<text class="ts" x="168" y="143" text-anchor="middle" dominant-baseline="central">Internal SRAM (520 KB)</text></g>
+
+<!-- PSRAM window boundary labels -->
+<text class="ts" x="66" y="173" text-anchor="end" fill="var(--color-text-tertiary)">0x3F80_0000</text>
+
+<!-- PSRAM mapped region (4 MB) — accessible -->
+<g class="c-blue"><rect x="70" y="178" width="196" height="92" rx="3" stroke-width="0.5"/>
+<text class="th" x="168" y="220" text-anchor="middle" dominant-baseline="central">PSRAM window</text>
+<text class="ts" x="168" y="238" text-anchor="middle" dominant-baseline="central">4 MB max mappable</text></g>
+
+<!-- 0x3F40_0000 bottom of window -->
+<text class="ts" x="66" y="276" text-anchor="end" fill="var(--color-text-tertiary)">0x3F40_0000</text>
+
+<!-- Below PSRAM: other regions -->
+<g class="c-gray"><rect x="70" y="280" width="196" height="44" rx="3" stroke-width="0.5"/>
+<text class="ts" x="168" y="302" text-anchor="middle" dominant-baseline="central">ROM / Flash cache / other</text></g>
+
+<!-- Striped inaccessible region below -->
+<rect x="70" y="328" width="196" height="60" rx="3" fill="url(#hatch)" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+<text class="ts" x="168" y="358" text-anchor="middle" dominant-baseline="central" fill="var(--color-text-tertiary)">Other address regions</text>
+
+<text class="ts" x="66" y="400" text-anchor="end" fill="var(--color-text-tertiary)">0x0000_0000</text>
+<line x1="70" y1="395" x2="266" y2="395" stroke="var(--color-border-secondary)" stroke-width="0.5" stroke-dasharray="3 3"/>
+
+<!-- ── Right column: physical PSRAM chip ── -->
+<text class="ts" x="480" y="58" text-anchor="middle">Physical PSRAM chip (8 MB)</text>
+
+<!-- Top 4 MB — NOT accessible -->
+<rect x="370" y="128" width="220" height="135" rx="3" fill="url(#hatch)" stroke="var(--color-border-danger)" stroke-width="1"/>
+<text class="th" x="480" y="182" text-anchor="middle" dominant-baseline="central" fill="var(--color-text-danger)">Upper 4 MB</text>
+<text class="ts" x="480" y="202" text-anchor="middle" dominant-baseline="central" fill="var(--color-text-danger)">Physically present</text>
+<text class="ts" x="480" y="219" text-anchor="middle" dominant-baseline="central" fill="var(--color-text-danger)">but NOT reachable</text>
+
+<!-- Divider line at 4 MB boundary -->
+<line x1="370" y1="263" x2="590" y2="263" stroke="var(--color-text-danger)" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text class="ts" x="600" y="267" fill="var(--color-text-danger)">4 MB wall</text>
+
+<!-- Bottom 4 MB — accessible -->
+<g class="c-blue"><rect x="370" y="263" width="220" height="135" rx="3" stroke-width="1"/>
+<text class="th" x="480" y="318" text-anchor="middle" dominant-baseline="central">Lower 4 MB</text>
+<text class="ts" x="480" y="337" text-anchor="middle" dominant-baseline="central">Accessible via MMU</text></g>
+
+<!-- Connector arrow: PSRAM window → lower 4 MB -->
+<path d="M266 224 L370 318" fill="none" stroke="#378ADD" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text class="ts" x="318" y="262" text-anchor="middle" fill="#378ADD">maps to</text>
+
+<!-- Size labels on PSRAM chip -->
+<text class="ts" x="596" y="200" fill="var(--color-text-danger)">4 MB</text>
+<text class="ts" x="596" y="330" fill="var(--color-text-info)">4 MB</text>
+<line x1="592" y1="128" x2="592" y2="263" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+<line x1="588" y1="128" x2="596" y2="128" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+<line x1="588" y1="263" x2="596" y2="263" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+<line x1="592" y1="263" x2="592" y2="398" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+<line x1="588" y1="398" x2="596" y2="398" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+
+<!-- Bottom annotation -->
+<text class="ts" x="340" y="435" text-anchor="middle" fill="var(--color-text-tertiary)">MMU window size is fixed in silicon — it cannot be changed by firmware or SDK</text>
+<text class="ts" x="340" y="454" text-anchor="middle" fill="var(--color-text-tertiary)">The upper 4 MB of the PSRAM chip has no address to be mapped to</text>
+
+<!-- Legend -->
+<rect x="70" y="478" width="12" height="12" rx="2" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="ts" x="86" y="489">Accessible PSRAM (4 MB)</text>
+<rect x="240" y="478" width="12" height="12" rx="2" fill="url(#hatch)" stroke="var(--color-border-danger)" stroke-width="0.5"/>
+<text class="ts" x="256" y="489">Inaccessible (no MMU address)</text>
+</svg>
+</div>
+
+<div class="sec" id="why">
+<div class="reasons">
+  <div class="rcard">
+    <div class="rtitle">Root cause 1 — the MMU window is 4 MB wide, fixed in silicon</div>
+    <div class="rbody">The ESP32 chip's Memory Management Unit (MMU) dedicates a specific region of the 32-bit address space for external SRAM: <span class="code">0x3F40_0000</span> to <span class="code">0x3F7F_FFFF</span>. That is exactly 4 MB (0x40_0000 bytes). This window is hardwired in the chip's die — it is not a firmware setting, not an SDK limitation, and not something Espressif could change with a software update. The WROVER-IE datasheet (Section 3.2, sourced from ESP32 Technical Reference Manual) states: "External SRAM can be mapped into CPU data memory space. Up to 4 MB can be mapped at a time."</div>
+  </div>
+  <div class="rcard">
+    <div class="rtitle">Root cause 2 — the MMU maps by pages, not by full chip</div>
+    <div class="rbody">The ESP32 MMU works by mapping 32 KB pages of external memory into the address window. Each page entry in the MMU points to a 32 KB region of the external PSRAM. The total number of page slots only covers the 4 MB window. There are no spare page table entries to reach beyond 4 MB. The upper 4 MB of the physical chip simply has no page table entry pointing to it — there is no CPU address for it to live at.</div>
+  </div>
+  <div class="rcard warn">
+    <div class="rtitle">Root cause 3 — why Espressif still ships 8 MB (R8) then?</div>
+    <div class="rbody">The PSRAM chip used in N16R8 variants is an 8 MB device because that is what is manufactured and available in QSPI PSRAM packages at 80 MHz. Espressif uses the same chip across product families. The ESP32-S3, for example, has a larger MMU window and <em>can</em> address 8 MB of PSRAM — so the same physical 8 MB chip is fully usable on ESP32-S3. On the original ESP32 (D0WD-V3), only half is reachable. The "R8" in the part number truthfully describes the physical chip, not what the ESP32 CPU can address.</div>
+  </div>
+  <div class="rcard">
+    <div class="rtitle">Root cause 4 — SPI bus addressing adds another constraint</div>
+    <div class="rbody">The PSRAM is accessed over a shared QSPI bus via <span class="code">SPICS1</span> (chip select 1, as seen in the WROVER block diagram, Figure 1). The SPI flash uses <span class="code">SPICS0</span>. The ESP32's SPI controller for PSRAM uses a 24-bit address (3 bytes) for the Quad SPI protocol at 80 MHz, which naturally limits addressable space to 2²⁴ = 16 MB. So bus addressing is not the bottleneck here — the MMU window of 4 MB is the actual constraint.</div>
+  </div>
+</div>
+<div class="summary-grid">
+  <div class="scard"><div class="sval" style="color:var(--color-text-primary)">8 MB</div><div class="slbl">Physical chip on module</div></div>
+  <div class="scard"><div class="sval" style="color:var(--color-text-info)">4 MB</div><div class="slbl">MMU window (fixed in silicon)</div></div>
+  <div class="scard"><div class="sval" style="color:var(--color-text-danger)">4 MB</div><div class="slbl">Permanently inaccessible</div></div>
+</div>
+</div>
+
+<div class="sec" id="workaround">
+<div class="reasons">
+  <div class="rcard ok">
+    <div class="rtitle">Option 1 — switch to ESP32-S3 (hardware solution)</div>
+    <div class="rbody">ESP32-S3 has a redesigned MMU that supports up to 32 MB of external PSRAM. With an ESP32-S3-WROOM-2 module (N16R8), all 8 MB of PSRAM is fully addressable. If your project is still in the design phase, this is the correct long-term fix. The ESP32-S3 is Espressif's recommended successor for memory-intensive applications.</div>
+  </div>
+  <div class="rcard ok">
+    <div class="rtitle">Option 2 — use flash-mapped storage for the extra space (workaround)</div>
+    <div class="rbody">The 16 MB flash on the WROVER-IE N16R8 is fully accessible (flash has its own larger mapping window). You can use <span class="code">esp_partition</span> + <span class="code">LittleFS</span> or <span class="code">SPIFFS</span> to store large assets, model weights, or audio data in flash and stream them into the 4 MB PSRAM buffer as needed. This is slower than true PSRAM access but works well for buffered playback or inference pipelines.</div>
+  </div>
+  <div class="rcard">
+    <div class="rtitle">Option 3 — custom MMU paging (extremely advanced, not practical)</div>
+    <div class="rbody">In theory, you could implement a software-managed paging scheme where you swap 32 KB pages in and out of the 4 MB window manually — essentially implementing virtual memory. In practice this requires modifying ESP-IDF at a very deep level, adds significant latency on every swap, and is not supported by any official Espressif SDK. It is not a viable option for production use.</div>
+  </div>
+  <div class="rcard warn">
+    <div class="rtitle">Bottom line — the 4 MB limit is a hardware design constraint</div>
+    <div class="rbody">No firmware update, no ESP-IDF version, no configuration flag, and no amount of coding can change the fact that the ESP32 chip's MMU window for external SRAM is 4 MB. The only real solution for full 8 MB PSRAM access is the ESP32-S3 chip family.</div>
+  </div>
+</div>
+</div>
+
+<script>
+function sw(id,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(id).classList.add('on');
+}
+</script>

@@ -1,0 +1,165 @@
+
+<style>
+*{box-sizing:border-box}
+.wrap{display:flex;gap:0;font-size:11px;font-family:var(--font-mono,monospace);padding:8px 0}
+.col{flex:1;min-width:0}
+.mod-title{text-align:center;font-size:13px;font-weight:500;color:var(--color-text-primary);padding:6px 0 10px}
+.mod-sub{text-align:center;font-size:11px;color:var(--color-text-tertiary);margin-top:-8px;padding-bottom:8px}
+.pin-row{display:flex;align-items:center;height:22px;margin:1px 0}
+.col.left .pin-row{flex-direction:row-reverse}
+.pin-box{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.pin-num{width:20px;text-align:center;color:var(--color-text-tertiary);font-size:10px;flex-shrink:0;padding:0 2px}
+.pin-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--color-text-secondary);font-size:11px;padding:0 4px}
+.col.left .pin-label{text-align:right}
+.center-col{width:24px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:52px}
+.center-row{height:24px;display:flex;align-items:center;justify-content:center;font-size:9px}
+.diff-badge{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
+
+.same{background:#B4B2A9;opacity:.5}
+.power{background:#E85D24}
+.gnd{background:#5F5E5A}
+.comm{background:#185FA5}
+.adc{background:#0F6E56}
+.dac{background:#533AB7}
+.spi{background:#853F0B}
+.nc{background:#B4B2A9;opacity:.6}
+.wrover-only{background:#1D9E75}
+.wroom-only{background:#D85A30}
+.diff-wrover{background:rgba(29,158,117,0.18);border-left:2px solid #1D9E75}
+.diff-wroom{background:rgba(216,90,48,0.18);border-right:2px solid #D85A30}
+.diff-both{background:rgba(216,90,48,0.10)}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:10px 12px 4px;border-top:1px solid var(--color-border-tertiary);margin-top:8px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.leg-dot{width:11px;height:11px;border-radius:2px;flex-shrink:0}
+
+.filter-bar{display:flex;gap:8px;padding:4px 0 10px;flex-wrap:wrap}
+.fbtn{padding:3px 10px;border-radius:12px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;font-size:11px;transition:all .15s}
+.fbtn.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+</style>
+
+<h2 class="sr-only">Pin layout comparison between ESP32-WROVER-IE (N16R8) and ESP32-WROOM-32D modules, showing shared and differing pins</h2>
+
+<div style="padding:0 8px">
+<div class="filter-bar">
+  <button class="fbtn active" onclick="setFilter('all',this)">All pins</button>
+  <button class="fbtn" onclick="setFilter('diff',this)">Differences only</button>
+</div>
+
+<div class="wrap" id="pinwrap">
+  <div class="col left" id="wrover-col">
+    <div class="mod-title">WROVER-IE</div>
+    <div class="mod-sub">N16R8 · 38 pins</div>
+  </div>
+  <div class="center-col" id="center-col">
+    <div style="height:52px"></div>
+  </div>
+  <div class="col right" id="wroom-col">
+    <div class="mod-title">WROOM-32D</div>
+    <div class="mod-sub">N4 · 38 pins</div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot power"></div>Power / EN</div>
+  <div class="leg-item"><div class="leg-dot gnd"></div>GND</div>
+  <div class="leg-item"><div class="leg-dot comm"></div>GPIO / Digital</div>
+  <div class="leg-item"><div class="leg-dot adc"></div>ADC / Input-only</div>
+  <div class="leg-item"><div class="leg-dot spi"></div>SPI / UART / I2C</div>
+  <div class="leg-item"><div class="leg-dot dac"></div>DAC / Touch</div>
+  <div class="leg-item"><div class="leg-dot nc"></div>NC / Reserved</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#1D9E75"></div>WROVER-only difference</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#D85A30"></div>WROOM-only difference</div>
+</div>
+</div>
+
+<script>
+const pins = [
+  {n:1,  wr:{l:'GND',c:'gnd'},       wm:{l:'GND',c:'gnd'},       same:true},
+  {n:2,  wr:{l:'3V3',c:'power'},      wm:{l:'3V3',c:'power'},      same:true},
+  {n:3,  wr:{l:'EN',c:'power'},       wm:{l:'EN',c:'power'},       same:true},
+  {n:4,  wr:{l:'IO36 / VP',c:'adc'},  wm:{l:'IO36 / VP',c:'adc'},  same:true},
+  {n:5,  wr:{l:'IO39 / VN',c:'adc'},  wm:{l:'IO39 / VN',c:'adc'},  same:true},
+  {n:6,  wr:{l:'IO34',c:'adc'},       wm:{l:'IO34',c:'adc'},       same:true},
+  {n:7,  wr:{l:'IO35',c:'adc'},       wm:{l:'IO35',c:'adc'},       same:true},
+  {n:8,  wr:{l:'IO32 / Touch9',c:'dac'}, wm:{l:'IO32 / Touch9',c:'dac'}, same:true},
+  {n:9,  wr:{l:'IO33 / Touch8',c:'dac'}, wm:{l:'IO33 / Touch8',c:'dac'}, same:true},
+  {n:10, wr:{l:'IO25 / DAC1',c:'dac'},   wm:{l:'IO25 / DAC1',c:'dac'},   same:true},
+  {n:11, wr:{l:'IO26 / DAC2',c:'dac'},   wm:{l:'IO26 / DAC2',c:'dac'},   same:true},
+  {n:12, wr:{l:'IO27 / Touch7',c:'dac'}, wm:{l:'IO27 / Touch7',c:'dac'}, same:true},
+  {n:13, wr:{l:'IO14 / HSPI_CLK',c:'spi'}, wm:{l:'IO14 / HSPI_CLK',c:'spi'}, same:true},
+  {n:14, wr:{l:'IO12 / HSPI_MISO',c:'spi'}, wm:{l:'IO12 / HSPI_MISO',c:'spi'}, same:true},
+  {n:15, wr:{l:'GND',c:'gnd'},         wm:{l:'GND',c:'gnd'},         same:true},
+  {n:16, wr:{l:'IO13 / HSPI_MOSI',c:'spi'}, wm:{l:'IO13 / HSPI_MOSI',c:'spi'}, same:true},
+  {n:17, wr:{l:'NC (Flash D2)',c:'nc'},  wm:{l:'NC (Flash D2)',c:'nc'},  same:true},
+  {n:18, wr:{l:'NC (Flash D3)',c:'nc'},  wm:{l:'NC (Flash D3)',c:'nc'},  same:true},
+  {n:19, wr:{l:'NC (Flash CMD)',c:'nc'}, wm:{l:'NC (Flash CMD)',c:'nc'}, same:true},
+  {n:20, wr:{l:'3V3 (VDD_RTC)',c:'power'}, wm:{l:'3V3 (VDD_RTC)',c:'power'}, same:true},
+  {n:21, wr:{l:'IO15 / Touch3',c:'comm'}, wm:{l:'IO15 / Touch3',c:'comm'}, same:true},
+  {n:22, wr:{l:'IO2 / Touch2',c:'comm'},  wm:{l:'IO2 / Touch2',c:'comm'},  same:true},
+  {n:23, wr:{l:'IO0 / BOOT',c:'comm'},    wm:{l:'IO0 / BOOT',c:'comm'},    same:true},
+  {n:24, wr:{l:'IO4 / Touch0',c:'comm'},  wm:{l:'IO4 / Touch0',c:'comm'},  same:true},
+  {n:25, wr:{l:'NC (Flash CLK)',c:'nc'},  wm:{l:'NC (Flash CLK)',c:'nc'},  same:true},
+  {n:26, wr:{l:'NC (Flash D0)',c:'nc'},   wm:{l:'NC (Flash D0)',c:'nc'},   same:true},
+  {n:27, wr:{l:'NC (Flash D1)',c:'nc'},   wm:{l:'NC (Flash D1)',c:'nc'},   same:true},
+  {n:28, wr:{l:'IO16 (PSRAM)',c:'nc'},    wm:{l:'IO16 / U2RXD',c:'spi'},  same:false},
+  {n:29, wr:{l:'IO17 (PSRAM)',c:'nc'},    wm:{l:'IO17 / U2TXD',c:'spi'},  same:false},
+  {n:30, wr:{l:'IO5 / VSPI_CS',c:'spi'}, wm:{l:'IO5 / VSPI_CS',c:'spi'}, same:true},
+  {n:31, wr:{l:'IO18 / VSPI_CLK',c:'spi'}, wm:{l:'IO18 / VSPI_CLK',c:'spi'}, same:true},
+  {n:32, wr:{l:'IO19 / VSPI_MISO',c:'spi'}, wm:{l:'IO19 / VSPI_MISO',c:'spi'}, same:true},
+  {n:33, wr:{l:'NC',c:'nc'},             wm:{l:'NC',c:'nc'},             same:true},
+  {n:34, wr:{l:'IO21 / SDA',c:'spi'},    wm:{l:'IO21 / SDA',c:'spi'},    same:true},
+  {n:35, wr:{l:'IO3 / U0RXD',c:'spi'},   wm:{l:'IO3 / U0RXD',c:'spi'},   same:true},
+  {n:36, wr:{l:'IO1 / U0TXD',c:'spi'},   wm:{l:'IO1 / U0TXD',c:'spi'},   same:true},
+  {n:37, wr:{l:'IO22 / SCL',c:'spi'},    wm:{l:'IO22 / SCL',c:'spi'},    same:true},
+  {n:38, wr:{l:'IO23 / VSPI_MOSI',c:'spi'}, wm:{l:'IO23 / VSPI_MOSI',c:'spi'}, same:true},
+];
+
+let currentFilter = 'all';
+
+function render() {
+  const wc = document.getElementById('wrover-col');
+  const cc = document.getElementById('center-col');
+  const wmc = document.getElementById('wroom-col');
+
+  const wrTitle = wc.innerHTML.split('<div class="pin-row')[0];
+  const wmTitle = wmc.innerHTML.split('<div class="pin-row')[0];
+  const ccTop = cc.innerHTML.split('<div class="center-row')[0];
+
+  let wrRows = '', ccRows = '', wmRows = '';
+
+  pins.forEach(p => {
+    if(currentFilter === 'diff' && p.same) return;
+    const wrBg = p.same ? '' : 'diff-wrover';
+    const wmBg = p.same ? '' : 'diff-wroom';
+    const dot = p.same ? '' : `<div class="diff-badge" style="background:var(--color-border-secondary);color:var(--color-text-secondary)">!</div>`;
+
+    wrRows += `<div class="pin-row ${wrBg}">
+      <div class="pin-label">${p.wr.l}</div>
+      <div class="pin-num">${p.n}</div>
+      <div class="pin-box ${p.wr.c}"></div>
+    </div>`;
+
+    ccRows += `<div class="center-row">${dot}</div>`;
+
+    wmRows += `<div class="pin-row ${wmBg}">
+      <div class="pin-box ${p.wm.c}"></div>
+      <div class="pin-num">${p.n}</div>
+      <div class="pin-label">${p.wm.l}</div>
+    </div>`;
+  });
+
+  wc.innerHTML = wrTitle + wrRows;
+  cc.innerHTML = ccTop + ccRows;
+  wmc.innerHTML = wmTitle + wmRows;
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+render();
+</script>

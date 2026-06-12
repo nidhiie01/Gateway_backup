@@ -1,0 +1,115 @@
+
+<style>
+*{box-sizing:border-box}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:8px 0}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.card.best{border:2px solid var(--color-border-info)}
+.card-head{padding:14px 14px 10px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.badge{display:inline-block;font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);margin-bottom:6px}
+.badge-info{background:var(--color-background-info);color:var(--color-text-info)}
+.badge-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-neu{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.mod-name{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.3}
+.mod-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.rows{padding:0}
+.row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 14px;border-bottom:0.5px solid var(--color-border-tertiary);gap:8px}
+.row:last-child{border-bottom:none}
+.row-label{font-size:11px;color:var(--color-text-tertiary);flex-shrink:0;width:76px;padding-top:1px}
+.row-val{font-size:12px;color:var(--color-text-primary);text-align:right;line-height:1.4}
+.row-val.highlight{color:var(--color-text-info);font-weight:500}
+.row-val.warn{color:var(--color-text-warning)}
+.row-val.muted{color:var(--color-text-secondary)}
+.section-head{font-size:10px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.05em;padding:8px 14px 2px;background:var(--color-background-tertiary)}
+.pick-row{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 0}
+.pick-btn{font-size:11px;padding:4px 10px;border-radius:12px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+</style>
+
+<h2 class="sr-only">Comparison of ESP32-WROVER-IE N16R8, ESP32-WROOM-32U, and ESP32-WROOM-32D modules across flash, RAM, antenna, pins, and use cases</h2>
+
+<div class="pick-row" style="padding-bottom:10px">
+  <button class="pick-btn" onclick="sendPrompt('Which of these 3 ESP32 modules should I use for a battery-powered IoT sensor?')">Which for IoT sensor? ↗</button>
+  <button class="pick-btn" onclick="sendPrompt('Which of the 3 ESP32 modules is best for a project inside a metal enclosure?')">Best for metal enclosure? ↗</button>
+  <button class="pick-btn" onclick="sendPrompt('Do all 3 ESP32 modules share the same pinout and are they drop-in replacements?')">Drop-in replaceable? ↗</button>
+</div>
+
+<div class="grid">
+
+  <div class="card best">
+    <div class="card-head">
+      <div class="badge badge-info">Most capable</div>
+      <div class="mod-name">WROVER-IE</div>
+      <div class="mod-sub">N16R8 · ESP32-D0WD-V3</div>
+    </div>
+    <div class="rows">
+      <div class="section-head">MEMORY</div>
+      <div class="row"><span class="row-label">Flash</span><span class="row-val highlight">16 MB</span></div>
+      <div class="row"><span class="row-label">PSRAM</span><span class="row-val highlight">8 MB (QSPI)</span></div>
+      <div class="row"><span class="row-label">RAM (internal)</span><span class="row-val">520 KB</span></div>
+      <div class="section-head">ANTENNA</div>
+      <div class="row"><span class="row-label">Type</span><span class="row-val highlight">IPEX / u.FL</span></div>
+      <div class="row"><span class="row-label">Built-in PCB ant.</span><span class="row-val muted">No</span></div>
+      <div class="section-head">PINS &amp; SIZE</div>
+      <div class="row"><span class="row-label">Pins</span><span class="row-val">38</span></div>
+      <div class="row"><span class="row-label">IO16 / IO17</span><span class="row-val warn">Reserved (PSRAM)</span></div>
+      <div class="row"><span class="row-label">Size (mm)</span><span class="row-val">18 × 31.4 × 3.3</span></div>
+      <div class="section-head">CONNECTIVITY</div>
+      <div class="row"><span class="row-label">Wi-Fi</span><span class="row-val">802.11 b/g/n</span></div>
+      <div class="row"><span class="row-label">Bluetooth</span><span class="row-val">BT 4.2 + BLE</span></div>
+      <div class="section-head">BEST FOR</div>
+      <div class="row"><span class="row-val" style="text-align:left;font-size:11px;color:var(--color-text-secondary)">Large buffers, image/audio processing, complex firmware, external antenna needed</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="badge badge-warn">External ant.</div>
+      <div class="mod-name">WROOM-32U</div>
+      <div class="mod-sub">N4 · ESP32-D0WD / D0WDQ6</div>
+    </div>
+    <div class="rows">
+      <div class="section-head">MEMORY</div>
+      <div class="row"><span class="row-label">Flash</span><span class="row-val">4 MB</span></div>
+      <div class="row"><span class="row-label">PSRAM</span><span class="row-val muted">None</span></div>
+      <div class="row"><span class="row-label">RAM (internal)</span><span class="row-val">520 KB</span></div>
+      <div class="section-head">ANTENNA</div>
+      <div class="row"><span class="row-label">Type</span><span class="row-val highlight">IPEX / u.FL</span></div>
+      <div class="row"><span class="row-label">Built-in PCB ant.</span><span class="row-val muted">No</span></div>
+      <div class="section-head">PINS &amp; SIZE</div>
+      <div class="row"><span class="row-label">Pins</span><span class="row-val">38</span></div>
+      <div class="row"><span class="row-label">IO16 / IO17</span><span class="row-val highlight">Free (UART2)</span></div>
+      <div class="row"><span class="row-label">Size (mm)</span><span class="row-val">18 × 25.5 × 3.1</span></div>
+      <div class="section-head">CONNECTIVITY</div>
+      <div class="row"><span class="row-label">Wi-Fi</span><span class="row-val">802.11 b/g/n</span></div>
+      <div class="row"><span class="row-label">Bluetooth</span><span class="row-val">BT 4.2 + BLE</span></div>
+      <div class="section-head">BEST FOR</div>
+      <div class="row"><span class="row-val" style="text-align:left;font-size:11px;color:var(--color-text-secondary)">Remote installs, metal enclosures, directional antenna needed, standard firmware</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="badge badge-neu">Most common</div>
+      <div class="mod-name">WROOM-32D</div>
+      <div class="mod-sub">N4 · ESP32-D0WD / D0WDQ6</div>
+    </div>
+    <div class="rows">
+      <div class="section-head">MEMORY</div>
+      <div class="row"><span class="row-label">Flash</span><span class="row-val">4 MB</span></div>
+      <div class="row"><span class="row-label">PSRAM</span><span class="row-val muted">None</span></div>
+      <div class="row"><span class="row-label">RAM (internal)</span><span class="row-val">520 KB</span></div>
+      <div class="section-head">ANTENNA</div>
+      <div class="row"><span class="row-label">Type</span><span class="row-val">PCB trace</span></div>
+      <div class="row"><span class="row-label">Built-in PCB ant.</span><span class="row-val highlight">Yes — no cable needed</span></div>
+      <div class="section-head">PINS &amp; SIZE</div>
+      <div class="row"><span class="row-label">Pins</span><span class="row-val">38</span></div>
+      <div class="row"><span class="row-label">IO16 / IO17</span><span class="row-val highlight">Free (UART2)</span></div>
+      <div class="row"><span class="row-label">Size (mm)</span><span class="row-val">18 × 25.5 × 3.1</span></div>
+      <div class="section-head">CONNECTIVITY</div>
+      <div class="row"><span class="row-label">Wi-Fi</span><span class="row-val">802.11 b/g/n</span></div>
+      <div class="row"><span class="row-label">Bluetooth</span><span class="row-val">BT 4.2 + BLE</span></div>
+      <div class="section-head">BEST FOR</div>
+      <div class="row"><span class="row-val" style="text-align:left;font-size:11px;color:var(--color-text-secondary)">Prototyping, open-air installs, breadboard use, simplest BOM</span></div>
+    </div>
+  </div>
+
+</div>
